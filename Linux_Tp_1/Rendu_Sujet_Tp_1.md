@@ -39,10 +39,13 @@ Pour rappel : **parmi les principaux composants d'un OS on a :**
 🌞 **Trouver au moins 4 façons différentes de péter la machine**
 
 ```
-Idée N°1 : sudo rm /boot/grub2/grub.cfg
+Idée N°1 : sudo rm /boot/grub2/grub.cfg (supression du fichier cherger des amorçages de l'os)
+
 Idée N°2 : 
+
 Idée N°3 : 
-Idée N°4 : sudo rm -Rf /*
+
+Idée N°4 : sudo rm -Rf /* (Supression pure et simple des fichier de partition principale)
 ```
 
 - elles doivent être **vraiment différentes**

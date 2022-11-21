@@ -52,7 +52,7 @@ Idée N°3 : nano /etc/shadow (Modification uniquement des mdp hasher de root et
 Idée N°4 : mv /boot/loader/entries/a2f4f451fc92436f8f7fa420b7191baa-0-rescue.conf /media 
            mv /boot/loader/entries/a2f4f451fc92436f8f7fa420b7191baa-5.14.0-70.13.1.el9_0.x86_64.conf /media 
            mv /boot/loader/entries/a2f4f451fc92436f8f7fa420b7191baa-5.14.0-70.26.1.el9_0.x86_64.conf /media 
-           (Déplacement des fichier .conf utiliser pour lancer l'os dans le dossier media)
+           (Déplacement des fichier de config utiliser pour lancer l'os dans le dossier media)
            reboot
 ```
 

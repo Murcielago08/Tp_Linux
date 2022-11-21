@@ -38,14 +38,22 @@ Pour rappel : **parmi les principaux composants d'un OS on a :**
 
 🌞 **Trouver au moins 4 façons différentes de péter la machine**
 
+Pour **casser la vm depuis un terminal** je vous propose 4 méthode si-dessous : 
 ```
-Idée N°1 : sudo rm /boot/grub2/grub.cfg (supression du fichier cherger des amorçages de l'os)
+Idée N°1 : sudo rm /boot/grub2/grub.cfg (Supression du fichier charger de l'installation/regénération de l'os)
+           reboot
 
 Idée N°2 : sudo rm -Rf /* (Supression pure et simple des fichier de partition principale)
+           reboot
 
-Idée N°3 : 
+Idée N°3 : nano /etc/shadow (Modification uniquement des mdp hasher de root et de mon utilisateur ici murci par " ")
+           reboot
 
-Idée N°4 : 
+Idée N°4 : mv /boot/loader/entries/a2f4f451fc92436f8f7fa420b7191baa-0-rescue.conf /media 
+           mv /boot/loader/entries/a2f4f451fc92436f8f7fa420b7191baa-5.14.0-70.13.1.el9_0.x86_64.conf /media 
+           mv /boot/loader/entries/a2f4f451fc92436f8f7fa420b7191baa-5.14.0-70.26.1.el9_0.x86_64.conf /media 
+           (Déplacement des fichier .conf utiliser pour lancer l'os dans le dossier media)
+           reboot
 ```
 
 - elles doivent être **vraiment différentes**

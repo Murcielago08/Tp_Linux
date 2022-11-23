@@ -14,7 +14,6 @@ Une seule VM Rocky suffit pour ce TP.
 
 - [TP2 : Appréhender l'environnement Linux](#tp2--appréhender-lenvironnement-linux)
 - [Sommaire](#sommaire)
-  - [Checklist](#checklist)
 - [I. Service SSH](#i-service-ssh)
   - [1. Analyse du service](#1-analyse-du-service)
   - [2. Modification du service](#2-modification-du-service)
@@ -27,23 +26,6 @@ Une seule VM Rocky suffit pour ce TP.
   - [2. Analyse des services existants](#2-analyse-des-services-existants)
   - [3. Création de service](#3-création-de-service)
 
-## Checklist
-
-> Habituez-vous à voir cette petite checklist, elle figurera dans tous les TPs.
-
-A chaque machine déployée, vous **DEVREZ** vérifier la 📝**checklist**📝 :
-
-- [x] IP locale, statique ou dynamique
-- [x] hostname défini
-- [x] firewall actif, qui ne laisse passer que le strict nécessaire
-- [x] SSH fonctionnel
-- [x] accès Internet (une route par défaut, une carte NAT c'est très bien)
-- [x] résolution de nom
-- [x] SELinux désactivé (vérifiez avec `sestatus`, voir [mémo install VM tout en bas](https://gitlab.com/it4lik/b1-reseau-2022/-/blob/main/cours/memo/install_vm.md#4-pr%C3%A9parer-la-vm-au-clonage))
-
-**Les éléments de la 📝checklist📝 sont STRICTEMENT OBLIGATOIRES à réaliser mais ne doivent PAS figurer dans le rendu.**
-
-![Checklist](./pics/checklist_is_here.jpg)
 
 # I. Service SSH
 
@@ -54,47 +36,46 @@ Le service SSH est déjà installé sur la machine, et il est aussi déjà déma
 On va, dans cette première partie, analyser le service SSH qui est en cours d'exécution.
 
 🌞 **S'assurer que le service `sshd` est démarré**
-
-- avec une commande `systemctl status`
+```
+[murci@tp2 ~]$ systemctl status sshd | grep active
+     Active: active (running) since Tue 2022-11-22 16:53:19 CET; 4min 46s ago
+```     
 
 🌞 **Analyser les processus liés au service SSH**
 
-- afficher les processus liés au service `sshd`
-  - vous pouvez afficher la liste des processus en cours d'exécution avec une commande `ps`
-  - pour le compte-rendu, vous devez filtrer la sortie de la commande en ajoutant `| grep <TEXTE_RECHERCHE>` après une commande
-    - exemple :
 
 ```bash
-# Exemple de manipulation de | grep
-
-# admettons un fichier texte appelé "fichier_demo"
-# on peut afficher son contenu avec la commande cat :
-$ cat fichier_demo
-bob a un chapeau rouge
-emma surfe avec un dinosaure
-eve a pas toute sa tête
-
-# il est possible de filtrer la sortie de la commande cat pour afficher uniquement certaines lignes
-$ cat fichier_demo | grep emma
-emma surfe avec un dinosaure
-
-$ cat fichier_demo | grep bob
-bob a un chapeau rouge
+[murci@tp2 ~]$ ps -ef | grep sshd
+root         685       1  0 16:53 ?        00:00:00 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+root         817     685  0 16:53 ?        00:00:00 sshd: murci [priv]
+murci        831     817  0 16:53 ?        00:00:00 sshd: murci@pts/0
+murci        886     832  0 17:00 pts/0    00:00:00 grep --color=auto sshd
 ```
 
 🌞 **Déterminer le port sur lequel écoute le service SSH**
 
-- avec une commande `ss`
-- isolez les lignes intéressantes avec un `| grep <TEXTE>`
+
+```
+[murci@tp2 ~]$ ss | grep ssh
+tcp   ESTAB  0      52                    192.168.56.2:ssh       192.168.56.1:61702
+```
 
 🌞 **Consulter les logs du service SSH**
 
-- les logs du service sont consultables avec une commande `journalctl`
-- un fichier de log qui répertorie toutes les tentatives de connexion SSH existe
-  - il est dans le dossier `/var/log`
-  - utilisez une commande `tail` pour visualiser les 10 dernière lignes de ce fichier
 
-![When she tells you](./pics/when_she_tells_you.png)
+```
+[murci@tp2 ~]$ sudo tail -n10 /var/log/secure
+Nov 22 17:16:44 murci sudo[918]: pam_unix(sudo:session): session closed for user root
+Nov 22 17:16:48 murci sudo[922]:   murci : TTY=pts/0 ; PWD=/home/murci ; USER=root ; COMMAND=/bin/journalctl -xe -u sshd
+Nov 22 17:16:48 murci sudo[922]: pam_unix(sudo:session): session opened for user root(uid=0) by murci(uid=1000)
+Nov 22 17:16:48 murci sudo[922]: pam_unix(sudo:session): session closed for user root
+Nov 22 17:17:06 murci sudo[928]:   murci : TTY=pts/0 ; PWD=/home/murci ; USER=root ; COMMAND=/bin/cat /var/log/secure
+Nov 22 17:17:06 murci sudo[928]: pam_unix(sudo:session): session opened for user root(uid=0) by murci(uid=1000)
+Nov 22 17:17:06 murci sudo[928]: pam_unix(sudo:session): session closed for user root
+Nov 22 17:17:16 murci sudo[932]:   murci : TTY=pts/0 ; PWD=/home/murci ; USER=root ; COMMAND=/bin/tail -n10 /var/log/secure
+Nov 22 17:17:16 murci sudo[932]: pam_unix(sudo:session): session opened for user root(uid=0) by murci(uid=1000)
+Nov 22 17:17:16 murci sudo[932]: pam_unix(sudo:session): session closed for user root
+```
 
 ## 2. Modification du service
 
@@ -105,6 +86,12 @@ Comme tout fichier de configuration, celui de SSH se trouve dans le dossier `/et
 Plus précisément, il existe un sous-dossier `/etc/ssh/` qui contient toute la configuration relative au protocole SSH
 
 🌞 **Identifier le fichier de configuration du serveur SSH**
+
+```
+[murci@tp2 ~]$ sudo cat sshd_config | grep Port
+#Port 22
+#GatewayPorts no
+```
 
 🌞 **Modifier le fichier de conf**
 

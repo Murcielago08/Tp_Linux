@@ -95,20 +95,31 @@ Plus précisément, il existe un sous-dossier `/etc/ssh/` qui contient toute la 
 
 🌞 **Modifier le fichier de conf**
 
-- exécutez un `echo $RANDOM` pour demander à votre shell de vous fournir un nombre aléatoire
-  - simplement pour vous montrer la petite astuce et vous faire manipuler le shell :)
-- changez le port d'écoute du serveur SSH pour qu'il écoute sur ce numéro de port
-  - dans le compte-rendu je veux un `cat` du fichier de conf
-  - filtré par un `| grep` pour mettre en évidence la ligne que vous avez modifié
-- gérer le firewall
-  - fermer l'ancien port
-  - ouvrir le nouveau port
-  - vérifier avec un `firewall-cmd --list-all` que le port est bien ouvert
-    - vous filtrerez la sortie de la commande avec un `| grep TEXTE`
+```
+[murci@tp2 ~]$ echo $RANDOM
+16578
+
+[murci@tp2 ~]$ sudo cat /etc/ssh/sshd_config | grep Port
+#Port 16578
+#GatewayPorts no
+
+[murci@tp2 ~]$ sudo firewall-cmd --remove-port=22/tcp --permanent
+success
+[murci@tp2 ~]$ sudo firewall-cmd --add-port=16578/tcp --permanent
+success
+[murci@tp2 ~]$ sudo firewall-cmd --reload
+success
+[murci@tp2 ~]$ sudo firewall-cmd --list-all | grep ports
+  ports: 80/tcp 16578/tcp
+  forward-ports:
+  source-ports:
+```
 
 🌞 **Redémarrer le service**
 
-- avec une commande `systemctl restart`
+```
+
+```
 
 🌞 **Effectuer une connexion SSH sur le nouveau port**
 

@@ -79,12 +79,6 @@ Nov 22 17:17:16 murci sudo[932]: pam_unix(sudo:session): session closed for user
 
 ## 2. Modification du service
 
-Dans cette section, on va aller visiter et modifier le fichier de configuration du serveur SSH.
-
-Comme tout fichier de configuration, celui de SSH se trouve dans le dossier `/etc/`.
-
-Plus précisément, il existe un sous-dossier `/etc/ssh/` qui contient toute la configuration relative au protocole SSH
-
 🌞 **Identifier le fichier de configuration du serveur SSH**
 
 ```
@@ -118,15 +112,14 @@ success
 🌞 **Redémarrer le service**
 
 ```
-
+[murci@tp2 ~]$ sudo systemctl restart sshd
 ```
 
 🌞 **Effectuer une connexion SSH sur le nouveau port**
 
-- depuis votre PC
-- il faudra utiliser une option à la commande `ssh` pour vous connecter à la VM
-
-> Je vous conseille de remettre le port par défaut une fois que cette partie est terminée.
+```
+C:\Users\darkj> ssh murci@linuxtp -p 16578
+```
 
 ✨ **Bonus : affiner la conf du serveur SSH**
 
@@ -134,34 +127,10 @@ success
 - par "améliorer" on entend essentiellement ici : augmenter son niveau de sécurité
 - le but c'est pas de me rendre 10000 lignes de conf que vous pompez sur internet pour le bonus, mais de vous éveiller à divers aspects de SSH, la sécu ou d'autres choses liées
 
-![Such a hacker](./pics/such_a_hacker.png)
 
 # II. Service HTTP
 
-Dans cette partie, on ne va pas se limiter à un service déjà présent sur la machine : on va ajouter un service à la machine.
-
-On va faire dans le *clasico* et installer un serveur HTTP très réputé : NGINX.  
-Un serveur HTTP permet d'héberger des sites web.
-
-Un serveur HTTP (ou "serveur Web") c'est :
-
-- un programme qui écoute sur un port (ouais ça change pas ça)
-- il permet d'héberger des sites web
-  - un site web c'est un tas de pages html, js, css
-  - un site web c'est aussi parfois du code php, python ou autres, qui indiquent comment le site doit se comporter
-- il permet à des clients de visiter les sites web hébergés
-  - pour ça, il faut un client HTTP (par exemple, un navigateur web)
-  - le client peut alors se connecter au port du serveur (connu à l'avance)
-  - une fois le tunnel de communication établi, le client effectuera des requêtes HTTP
-  - le serveur répondra à l'aide du protocole HTTP
-
-> Une requête HTTP c'est "donne moi tel fichier HTML". Une réponse c'est "voici tel fichier HTML" + le fichier HTML en question.
-
-Ok bon on y va ?
-
 ## 1. Mise en place
-
-![nngijgingingingijijnx ?](./pics/njgjgijigngignx.jpg)
 
 🌞 **Installer le serveur NGINX**
 
@@ -246,10 +215,6 @@ server {
 
 # III. Your own services
 
-Dans cette partie, on va créer notre propre service :)
-
-HE ! Vous vous souvenez de `netcat` ou `nc` ? Le ptit machin de notre premier cours de réseau ? C'EST L'HEURE DE LE RESORTIR DES PLACARDS.
-
 ## 1. Au cas où vous auriez oublié
 
 Au cas où vous auriez oublié, une petite partie qui ne doit pas figurer dans le compte-rendu, pour vous remettre `nc` en main.
@@ -272,12 +237,6 @@ Au cas où vous auriez oublié, une petite partie qui ne doit pas figurer dans l
 
 ## 2. Analyse des services existants
 
-Un service c'est quoi concrètement ? C'est juste un processus, que le système lance, et dont il s'occupe après.
-
-Il est défini dans un simple fichier texte, qui contient une info primordiale : la commande exécutée quand on "start" le service.
-
-Il est possible de définir beaucoup d'autres paramètres optionnels afin que notre service s'exécute dans de bonnes conditions.
-
 🌞 **Afficher le fichier de service SSH**
 
 - vous pouvez obtenir son chemin avec un `systemctl status <SERVICE>`
@@ -291,12 +250,6 @@ Il est possible de définir beaucoup d'autres paramètres optionnels afin que no
 - mettez en évidence la ligne qui commence par `ExecStart=`
 
 ## 3. Création de service
-
-![Create service](./pics/create_service.png)
-
-Bon ! On va créer un petit service qui lance un `nc`. Et vous allez tout de suite voir pourquoi c'est pratique d'en faire un service et pas juste le lancer à la min.
-
-Ca reste un truc pour s'exercer, c'pas non plus le truc le plus utile de l'année que de mettre un `nc` dans un service n_n
 
 🌞 **Créez le fichier `/etc/systemd/system/tp2_nc.service`**
 

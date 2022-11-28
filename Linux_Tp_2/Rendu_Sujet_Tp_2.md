@@ -64,17 +64,11 @@ tcp   ESTAB  0      52                    192.168.56.2:ssh       192.168.56.1:61
 
 
 ```
-[murci@tp2 ~]$ sudo tail -n10 /var/log/secure
-Nov 22 17:16:44 murci sudo[918]: pam_unix(sudo:session): session closed for user root
-Nov 22 17:16:48 murci sudo[922]:   murci : TTY=pts/0 ; PWD=/home/murci ; USER=root ; COMMAND=/bin/journalctl -xe -u sshd
-Nov 22 17:16:48 murci sudo[922]: pam_unix(sudo:session): session opened for user root(uid=0) by murci(uid=1000)
-Nov 22 17:16:48 murci sudo[922]: pam_unix(sudo:session): session closed for user root
-Nov 22 17:17:06 murci sudo[928]:   murci : TTY=pts/0 ; PWD=/home/murci ; USER=root ; COMMAND=/bin/cat /var/log/secure
-Nov 22 17:17:06 murci sudo[928]: pam_unix(sudo:session): session opened for user root(uid=0) by murci(uid=1000)
-Nov 22 17:17:06 murci sudo[928]: pam_unix(sudo:session): session closed for user root
-Nov 22 17:17:16 murci sudo[932]:   murci : TTY=pts/0 ; PWD=/home/murci ; USER=root ; COMMAND=/bin/tail -n10 /var/log/secure
-Nov 22 17:17:16 murci sudo[932]: pam_unix(sudo:session): session opened for user root(uid=0) by murci(uid=1000)
-Nov 22 17:17:16 murci sudo[932]: pam_unix(sudo:session): session closed for user root
+[murci@tp2 ~]$ sudo tail -n10 /var/log/secure | grep sshd
+Nov 28 10:48:11 tp2 sshd[688]: Server listening on 0.0.0.0 port 22.
+Nov 28 10:48:11 tp2 sshd[688]: Server listening on :: port 22.
+Nov 28 10:49:03 tp2 sshd[826]: Accepted password for murci from 192.168.56.1 port 52030 ssh2
+Nov 28 10:49:04 tp2 sshd[826]: pam_unix(sshd:session): session opened for user murci(uid=1000) by (uid=0)
 ```
 
 ## 2. Modification du service
@@ -118,7 +112,10 @@ success
 🌞 **Effectuer une connexion SSH sur le nouveau port**
 
 ```
-C:\Users\darkj> ssh murci@linuxtp -p 16578
+PS C:\Users\darkj> ssh -p 16578 murci@linuxtp
+murci@linuxtp's password:
+Last login: Tue Nov 22 18:49:04 2022 from 192.168.56.1
+[murci@tp2 ~]$
 ```
 
 ✨ **Bonus : affiner la conf du serveur SSH**
@@ -134,120 +131,194 @@ C:\Users\darkj> ssh murci@linuxtp -p 16578
 
 🌞 **Installer le serveur NGINX**
 
-- je vous laisse faire votre recherche internet
-- n'oubliez pas de préciser que c'est pour "Rocky 9"
+```
+[murci@tp2 ~]$ sudo dnf install nginx
+```
 
 🌞 **Démarrer le service NGINX**
 
+```
+[murci@tp2 ~]$ sudo systemctl enable nginx
+tl start nginxCreated symlink /etc/systemd/system/multi-user.target.wants/nginx.service → /usr/lib/systemd/system/nginx.service.
+[murci@tp2 ~]$ sudo systemctl start nginx
+[murci@tp2 ~]$ sudo systemctl status nginx | grep active
+     Active: active (running) since Mon 2022-11-28 8:48:13 CET; 12min ago
+```
+
 🌞 **Déterminer sur quel port tourne NGINX**
 
-- vous devez filtrer la sortie de la commande utilisée pour n'afficher que les lignes demandées
-- ouvrez le port concerné dans le firewall
+```
+[murci@tp2 ~]$ sudo cat /etc/nginx/nginx.conf | grep listen
+        listen       80;
+        listen       [::]:80;
+#        listen       443 ssl http2;
+#        listen       [::]:443 ssl http2;
+```
 
 🌞 **Déterminer les processus liés à l'exécution de NGINX**
 
-- vous devez filtrer la sortie de la commande utilisée pour n'afficher que les lignes demandées
+```
+[murci@tp2 ~]$ ps -ef | grep nginx
+root         812       1  0 10:48 ?        00:00:00 nginx: master process /usr/sbin/nginx
+nginx        814     812  0 10:48 ?        00:00:00 nginx: worker process
+murci        946     891  0 11:03 pts/0    00:00:00 grep --color=auto nginx
+```
 
 🌞 **Euh wait**
 
-- y'a un serveur Web qui tourne là ?
-- bah... visitez le site web ?
-  - ouvrez votre navigateur (sur votre PC) et visitez `http://<IP_VM>:<PORT>`
-  - vous pouvez aussi (toujours sur votre PC) utiliser la commande `curl` depuis un terminal pour faire une requête HTTP
-- dans le compte-rendu, je veux le `curl` (pas un screen de navigateur)
-  - utilisez Git Bash si vous êtes sous Windows (obligatoire)
-  - vous utiliserez `| head` après le `curl` pour afficher que certaines des premières lignes
-  - vous utiliserez une option à cette commande `head` pour afficher les 7 premières lignes de la sortie du `curl`
+```
+http://192.168.56.2
+[murci@tp2 ~]$ curl http://192.168.56.2 | head -n 7
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  7620  100  7620    0     0   676k      0 --:--:-- --:--:-- --:--:--  676k
+<!doctype html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <title>HTTP Server Test Page powered by: Rocky Linux</title>
+    <style type="text/css">
+```
 
 ## 2. Analyser la conf de NGINX
 
 🌞 **Déterminer le path du fichier de configuration de NGINX**
 
-- faites un `ls -al <PATH_VERS_LE_FICHIER>` pour le compte-rendu
+```
+[murci@tp2 ~]$ ls -al /etc/nginx/nginx.conf
+-rw-r--r--. 1 root root 2334 May 16  2022 /etc/nginx/nginx.conf
+```
 
 🌞 **Trouver dans le fichier de conf**
 
-- les lignes qui permettent de faire tourner un site web d'accueil (la page moche que vous avez vu avec votre navigateur)
-  - ce que vous cherchez, c'est un bloc `server { }` dans le fichier de conf
-  - vous ferez un `cat <FICHIER> | grep <TEXTE> -A X` pour me montrer les lignes concernées dans le compte-rendu
-    - l'option `-A X` permet d'afficher aussi les `X` lignes après chaque ligne trouvée par `grep`
-- tout en bas du fichier, une ligne qui parle d'inclure d'autres fichiers de conf
-  - encore un `cat <FICHIER> | grep <TEXTE>`
-  - bah ouais, on stocke pas toute la conf dans un seul fichier, sinon ça serait le bordel
+```
+[murci@tp2 ~]$ cat /etc/nginx/nginx.conf | grep "server {" -A 16
+    server {
+        listen       80;
+        listen       [::]:80;
+        server_name  _;
+        root         /usr/share/nginx/html;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        error_page 404 /404.html;
+        location = /404.html {
+        }
+
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+        }
+    }
+--
+#    server {
+#        listen       443 ssl http2;
+#        listen       [::]:443 ssl http2;
+#        server_name  _;
+#        root         /usr/share/nginx/html;
+#
+#        ssl_certificate "/etc/pki/nginx/server.crt";
+#        ssl_certificate_key "/etc/pki/nginx/private/server.key";
+#        ssl_session_cache shared:SSL:1m;
+#        ssl_session_timeout  10m;
+#        ssl_ciphers PROFILE=SYSTEM;
+#        ssl_prefer_server_ciphers on;
+#
+#        # Load configuration files for the default server block.
+#        include /etc/nginx/default.d/*.conf;
+#
+#        error_page 404 /404.html;
+
+[murci@tp2 ~]$ cat /etc/nginx/nginx.conf | grep "conf.d"
+    # Load modular configuration files from the /etc/nginx/conf.d directory.
+    include /etc/nginx/conf.d/*.conf;
+```
 
 ## 3. Déployer un nouveau site web
 
 🌞 **Créer un site web**
-
-- bon on est pas en cours de design ici, alors on va faire simplissime
-- créer un sous-dossier dans `/var/www/`
-  - par convention, on stocke les sites web dans `/var/www/`
-  - votre dossier doit porter le nom `tp2_linux`
-- dans ce dossier `/var/www/tp2_linux`, créez un fichier `index.html`
-  - il doit contenir `<h1>MEOW mon premier serveur web</h1>`
+```
+[murci@tp2 ~]$ sudo mkdir -p /var/www/tp2_linux
+[murci@tp2 ~]$ sudo touch /var/www/tp2_linux/index.html
+[murci@tp2 ~]$ sudo cat /var/www/tp2_linux/index.html
+<h1>MEOW mon premier serveur web</h1>
+```
 
 🌞 **Adapter la conf NGINX**
 
-- dans le fichier de conf principal
-  - vous supprimerez le bloc `server {}` repéré plus tôt pour que NGINX ne serve plus le site par défaut
-  - redémarrez NGINX pour que les changements prennent effet
-- créez un nouveau fichier de conf
-  - il doit être nommé correctement
-  - il doit être placé dans le bon dossier
-  - c'est quoi un "nom correct" et "le bon dossier" ?
-    - bah vous avez repéré dans la partie d'avant les fichiers qui sont inclus par le fichier de conf principal non ?
-    - créez votre fichier en conséquence
-  - redémarrez NGINX pour que les changements prennent effet
-  - le contenu doit être le suivant :
+```
+[murci@tp2 ~]$ cat /etc/nginx/nginx.conf | grep "server {" -A 16
+#    server {
+#        listen       443 ssl http2;
+#        listen       [::]:443 ssl http2;
+#        server_name  _;
+#        root         /usr/share/nginx/html;
+##        ssl_certificate "/etc/pki/nginx/server.crt";
+#        ssl_certificate_key "/etc/pki/nginx/private/server.key";
+#        ssl_session_cache shared:SSL:1m;
+#        ssl_session_timeout  10m;
+#        ssl_ciphers PROFILE=SYSTEM;
+#        ssl_prefer_server_ciphers on;
+#
+#        # Load configuration files for the default server block.
+#        include /etc/nginx/default.d/*.conf;
+#
+#        error_page 404 /404.html;
+#            location = /40x.html {
 
-```nginx
+[murci@tp2 ~]$ sudo systemctl restart nginx
+
+
+[murci@tp2 ~]$ echo $RANDOM
+20484
+[murci@tp2 ~]$ sudo cat /etc/nginx/conf.d/monsite.conf
 server {
   # le port choisi devra être obtenu avec un 'echo $RANDOM' là encore
-  listen <PORT>;
+  listen 20484;
 
   root /var/www/tp2_linux;
 }
+[murci@tp2 ~]$ sudo firewall-cmd --add-port=20484/tcp --permanent
+success
+[murci@tp2 ~]$ sudo firewall-cmd --reload
+success
+[murci@tp2 ~]$ sudo firewall-cmd --list-all | grep ports
+  ports: 80/tcp 16578/tcp 20484/tcp
+  forward-ports:
+  source-ports:
+[murci@tp2 ~]$ sudo systemctl restart nginx
 ```
+
 
 🌞 **Visitez votre super site web**
 
-- toujours avec une commande `curl` depuis votre PC (ou un navigateur)
+```
+[murci@tp2 ~]$ curl http://192.168.56.2:20484
+<h1>MEOW mon premier serveur web</h1>
+```
 
 # III. Your own services
 
 ## 1. Au cas où vous auriez oublié
 
-Au cas où vous auriez oublié, une petite partie qui ne doit pas figurer dans le compte-rendu, pour vous remettre `nc` en main.
-
-> Allez-le télécharger sur votre PC si vous ne l'avez pu. Lien dans Google ou dans le premier TP réseau.
-
-➜ Dans la VM
-
-- `nc -l 8888`
-  - lance netcat en mode listen
-  - il écoute sur le port 8888
-  - sans rien préciser de plus, c'est le port 8888 TCP qui est utilisé
-
-➜ Sur votre PC
-
-- `nc <IP_VM> 8888`
-- vérifiez que vous pouvez envoyer des messages dans les deux sens
-
-> Oubliez pas d'ouvrir le port 8888/tcp de la VM bien sûr :)
+good ^^
 
 ## 2. Analyse des services existants
 
 🌞 **Afficher le fichier de service SSH**
 
-- vous pouvez obtenir son chemin avec un `systemctl status <SERVICE>`
-- mettez en évidence la ligne qui commence par `ExecStart=`
-  - encore un `cat <FICHIER> | grep <TEXTE>`
-  - c'est la ligne qui définit la commande lancée lorsqu'on "start" le service
-    - taper `systemctl start <SERVICE>` ou exécuter cette commande à la main, c'est (presque) pareil
+```
+[murci@tp2 ~]$ cat /usr/lib/systemd/system/sshd.service | grep ExecStart=
+ExecStart=/usr/sbin/sshd -D $OPTIONS
+```
 
 🌞 **Afficher le fichier de service NGINX**
 
-- mettez en évidence la ligne qui commence par `ExecStart=`
+```
+[murci@tp2 ~]$ cat /usr/lib/systemd/system/nginx.service | grep ExecStart=
+ExecStart=/usr/sbin/nginx
+```
 
 ## 3. Création de service
 

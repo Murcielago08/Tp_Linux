@@ -324,9 +324,9 @@ ExecStart=/usr/sbin/nginx
 
 🌞 **Créez le fichier `/etc/systemd/system/tp2_nc.service`**
 
-- son contenu doit être le suivant (nice & easy)
-
-```service
+```
+[murci@tp2 ~]$ sudo touch /etc/systemd/system/tp2_nc.service
+[murci@tp2 ~]$ sudo cat /etc/systemd/system/tp2_nc.service
 [Unit]
 Description=Super netcat tout fou
 
@@ -336,11 +336,15 @@ ExecStart=/usr/bin/nc -l 8888
 
 🌞 **Indiquer au système qu'on a modifié les fichiers de service**
 
-- la commande c'est `sudo systemctl daemon-reload`
+```
+[murci@tp2 ~]$ sudo systemctl daemon-reload
+```
 
 🌞 **Démarrer notre service de ouf**
 
-- avec une commande `systemctl start`
+```
+[murci@tp2 ~]$ sudo systemctl start tp2_nc.service
+```
 
 🌞 **Vérifier que ça fonctionne**
 
@@ -348,12 +352,9 @@ ExecStart=/usr/bin/nc -l 8888
 - vérifier que `nc` écoute bien derrière un port avec un `ss`
   - vous filtrerez avec un `| grep` la sortie de la commande pour n'afficher que les lignes intéressantes
 - vérifer que juste ça marche en vous connectant au service depuis votre PC
+````
 
-➜ Si vous vous connectez avec le client, que vous envoyez éventuellement des messages, et que vous quittez `nc` avec un CTRL+C, alors vous pourrez constater que le service s'est stoppé
-
-- bah oui, c'est le comportement de `nc` ça ! 
-- le client se connecte, et quand il se tire, ça ferme `nc` côté serveur aussi
-- faut le relancer si vous voulez retester !
+```
 
 🌞 **Les logs de votre service**
 

@@ -352,7 +352,7 @@ ExecStart=/usr/bin/nc -l 8888
 - vérifier que `nc` écoute bien derrière un port avec un `ss`
   - vous filtrerez avec un `| grep` la sortie de la commande pour n'afficher que les lignes intéressantes
 - vérifer que juste ça marche en vous connectant au service depuis votre PC
-````
+```
 
 ```
 

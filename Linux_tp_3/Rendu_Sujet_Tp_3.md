@@ -95,13 +95,43 @@ File path : /srv/yt/downloads/Bleach: Fade to Black - Fade to Black B13a 【Inte
 
 📁 **Le script `/srv/yt/yt-v2.sh`**
 
+[yt-v2.sh](yt-v2.sh)
+
 📁 **Fichier `/etc/systemd/system/yt.service`**
+
+[yt.service](yt.service)
 
 🌞 Vous fournirez dans le compte-rendu, en plus des fichiers :
 
 - un `systemctl status yt` quand le service est en cours de fonctionnement
+
+```
+[murci@tp3 ~]$ systemctl status yt
+● yt.service - Telechargement de videos YouTube
+     Loaded: loaded (/etc/systemd/system/yt.service; disabled; vendor prese>
+     Active: active (running) since Mon 2022-12-05 06:29:51 CET; 13min ago
+   Main PID: 28792 (yt-v2.sh)
+      Tasks: 2 (limit: 5907)
+     Memory: 580.0K
+        CPU: 160ms
+     CGroup: /system.slice/yt.service
+             ├─28792 /bin/bash /srv/yt/yt-v2.sh
+             └─28969 sleep 5
+
+Dec 05 06:29:51 tp3 systemd[1]: Started Telechargement de videos YouTube.
+```
+
 - un extrait de `journalctl -xe -u yt`
 
-> Hé oui les commandes `journalctl` fonctionnent sur votre service pour voir les logs ! Et vous devriez constater que c'est vos `echo` qui pop. En résumé, **le STDOUT de votre script, c'est devenu les logs du service !**
-
-🌟**BONUS** : get fancy. Livrez moi un gif ou un [asciinema](https://asciinema.org/) (PS : c'est le feu asciinema) de votre service en action, où on voit les URLs de vidéos disparaître, et les fichiers apparaître dans le fichier de destination
+```
+Dec 05 06:29:51 tp3 systemd[1]: Started Telechargement de videos YouTube.
+░░ Subject: A start job for unit yt.service has finished successfully
+░░ Defined-By: systemd
+░░ Support: https://access.redhat.com/support
+░░
+░░ A start job for unit yt.service has finished successfully.
+░░
+░░ The job identifier is 3826.
+Dec 05 06:52:40 tp3 yt-v2.sh[28792]: Video https://www.youtube.com/watch?v=P3RNPoQIX0M was downloaded.
+Dec 05 06:52:40 tp3 yt-v2.sh[28792]: File path : /srv/yt/downloads/Zaraki Kenpachi Appears - Bleach: TYBW Episode 5 [On the Precipice of Defeat ] (HQ Cover)/Zaraki Kenpachi Appears - Bleach: TYBW Episode 5 [On the Precipice of Defeat ] (HQ Cover).mp4
+```

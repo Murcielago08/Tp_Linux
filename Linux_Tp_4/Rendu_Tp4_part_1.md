@@ -63,13 +63,24 @@ Writing superblocks and filesystem accounting information: done
 🌞 **Monter la partition**
 
 - montage de la partition (avec la commande `mount`)
-  - la partition doit être montée dans le dossier `/storage`
-  - preuve avec une commande `df -h` que la partition est bien montée
-    - utilisez un `| grep` pour isoler les lignes intéressantes
-  - prouvez que vous pouvez lire et écrire des données sur cette partition
+```
+[murci@tp4storage ~]$ df -h | grep storage
+  /dev/mapper/storage-lv_storage  2.0G   24K  1.9G   1% /mnt/storage
+```
 - définir un montage automatique de la partition (fichier `/etc/fstab`)
-  - vous vérifierez que votre fichier `/etc/fstab` fonctionne correctement
+```
+[murci@tp4storage ~]$ sudo mount -av
+/                        : ignored
+/boot                    : already mounted
+none                     : ignored
+mount: /mnt/storage does not contain SELinux labels.
+       You just mounted a file system that supports labels which does not
+       contain labels, onto an SELinux box. It is likely that confined
+       applications will generate AVC messages and not be allowed access to
+       this file system.  For more details see restorecon(8) and mount(8).
+/mnt/storage             : successfully mounted
+```
 
 Ok ! Za, z'est fait. On a un espace de stockage dédié pour stocker nos sites web.
 
-**Passons à [la partie 2 : installation du serveur de partage de fichiers](./../part2/README.md).**
+**[partie 2 : installation du serveur de partage de fichiers](Rendu_Tp4_part_2.md)**

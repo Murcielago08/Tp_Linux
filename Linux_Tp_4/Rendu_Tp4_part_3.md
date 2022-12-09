@@ -1,44 +1,12 @@
 # Partie 3 : Serveur web
 
 - [Partie 3 : Serveur web](#partie-3--serveur-web)
-  - [1. Intro NGINX](#1-intro-nginx)
   - [2. Install](#2-install)
   - [3. Analyse](#3-analyse)
   - [4. Visite du service web](#4-visite-du-service-web)
   - [5. Modif de la conf du serveur web](#5-modif-de-la-conf-du-serveur-web)
   - [6. Deux sites web sur un seul serveur](#6-deux-sites-web-sur-un-seul-serveur)
 
-## 1. Intro NGINX
-
-![gnignigggnnninx ?](../pics/ngnggngngggninx.jpg)
-
-**NGINX (prononcé "engine-X") est un serveur web.** C'est un outil de référence aujourd'hui, il est réputé pour ses performances et sa robustesse.
-
-Un serveur web, c'est un programme qui écoute sur un port et qui attend des requêtes HTTP. Quand il reçoit une requête de la part d'un client, il renvoie une réponse HTTP qui contient le plus souvent de l'HTML, du CSS et du JS.
-
-> Une requête HTTP c'est par exemple `GET /index.html` qui veut dire "donne moi le fichier `index.html` qui est stocké sur le serveur". Le serveur renverra alors le contenu de ce fichier `index.html`.
-
-Ici on va pas DU TOUT s'attarder sur la partie dév web étou, une simple page HTML fera l'affaire.
-
-Une fois le serveur web NGINX installé (grâce à un paquet), sont créés sur la machine :
-
-- **un service** (un fichier `.service`)
-  - on pourra interagir avec le service à l'aide de `systemctl`
-- **des fichiers de conf**
-  - comme d'hab c'est dans `/etc/` la conf
-  - comme d'hab c'est bien rangé, donc la conf de NGINX c'est dans `/etc/nginx/`
-  - question de simplicité en terme de nommage, le fichier de conf principal c'est `/etc/nginx/nginx.conf`
-- **une racine web**
-  - c'est un dossier dans lequel un site est stocké
-  - c'est à dire là où se trouvent tous les fichiers PHP, HTML, CSS, JS, etc du site
-  - ce dossier et tout son contenu doivent appartenir à l'utilisateur qui lance le service
-- **des logs**
-  - tant que le service a pas trop tourné c'est empty
-  - les fichiers de logs sont dans `/var/log/`
-  - comme d'hab c'est bien rangé donc c'est dans `/var/log/nginx/`
-  - on peut aussi consulter certains logs avec `sudo journalctl -xe -u nginx`
-
-> Chaque log est à sa place, on ne trouve pas la même chose dans chaque fichier ou la commande `journalctl`. La commande `journalctl` vous permettra de repérer les erreurs que vous glisser dans les fichiers de conf et qui empêche le démarrage correct de NGINX.
 
 ## 2. Install
 
@@ -46,8 +14,9 @@ Une fois le serveur web NGINX installé (grâce à un paquet), sont créés sur 
 
 🌞 **Installez NGINX**
 
-- installez juste NGINX (avec un `dnf install`) et passez à la suite
-- référez-vous à des docs en ligne si besoin
+```
+[murci@tp4web ~]$ sudo dnf install nginx
+```
 
 ## 3. Analyse
 

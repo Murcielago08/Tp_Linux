@@ -20,50 +20,130 @@
 
 ## 3. Analyse
 
-Avant de config des truks 2 ouf étou, on va lancer à l'aveugle et inspecter ce qu'il se passe, inspecter avec les outils qu'on connaît ce que fait NGINX à notre OS.
-
-Commencez donc par démarrer le service NGINX :
-
-```bash
-$ sudo systemctl start nginx
-$ sudo systemctl status nginx
-```
-
 🌞 **Analysez le service NGINX**
 
 - avec une commande `ps`, déterminer sous quel utilisateur tourne le processus du service NGINX
-  - utilisez un `| grep` pour isoler les lignes intéressantes
+
+```
+[murci@tp4web ~]$ ps -ef | grep nginx
+root         908       1  0 14:12 ?        00:00:00 nginx: master process /usr/sbin/nginx
+nginx        909     908  0 14:12 ?        00:00:00 nginx: worker process
+murci        917     875  0 14:12 pts/0    00:00:00 grep --color=auto nginx
+```
+
 - avec une commande `ss`, déterminer derrière quel port écoute actuellement le serveur web
-  - utilisez un `| grep` pour isoler les lignes intéressantes
+
+```
+[murci@tp4web ~]$ sudo ss -alnp | grep nginx
+tcp   LISTEN 0      511                                       0.0.0.0:80               0.0.0.0:*     users:(("nginx",pid=909,fd=6),("nginx",pid=908,fd=6))
+
+tcp   LISTEN 0      511                                          [::]:80                  [::]:*     users:(("nginx",pid=909,fd=7),("nginx",pid=908,fd=7))
+```
+
 - en regardant la conf, déterminer dans quel dossier se trouve la racine web
-  - utilisez un `| grep` pour isoler les lignes intéressantes
+
+```
+[murci@tp4web ~]$ cat /etc/nginx/nginx.conf | grep root
+        root         /usr/share/nginx/html;
+#        root         /usr/share/nginx/html;
+```
+
 - inspectez les fichiers de la racine web, et vérifier qu'ils sont bien accessibles en lecture par l'utilisateur qui lance le processus
-  - ça va se faire avec un `ls` et les options appropriées
+
+```
+[murci@tp4web ~]$ ls -al /usr/share/nginx/html/
+total 12
+drwxr-xr-x. 3 root root  143 Dec  9 15:57 .
+drwxr-xr-x. 4 root root   33 Dec  9 15:57 ..
+-rw-r--r--. 1 root root 3332 Oct 31 16:35 404.html
+-rw-r--r--. 1 root root 3404 Oct 31 16:35 50x.html
+drwxr-xr-x. 2 root root   27 Dec  9 15:57 icons
+lrwxrwxrwx. 1 root root   25 Oct 31 16:37 index.html -> ../../testpage/index.html
+-rw-r--r--. 1 root root  368 Oct 31 16:35 nginx-logo.png
+lrwxrwxrwx. 1 root root   14 Oct 31 16:37 poweredby.png -> nginx-logo.png
+lrwxrwxrwx. 1 root root   37 Oct 31 16:37 system_noindex_logo.png -> ../../pixmaps/system-noindex-logo.png
+```
 
 ## 4. Visite du service web
 
-**Et ça serait bien d'accéder au service non ?** Genre c'est un serveur web. On veut voir un site web !
 
 🌞 **Configurez le firewall pour autoriser le trafic vers le service NGINX**
 
-- vous avez reperé avec `ss` dans la partie d'avant le port à ouvrir
+```
+[murci@tp4web ~]$ sudo firewall-cmd --list-all | grep 80
+  ports: 80/tcp 22/tcp
+```
 
 🌞 **Accéder au site web**
 
-- avec votre navigateur sur VOTRE PC
-  - ouvrez le navigateur vers l'URL : `http://<IP_VM>:<PORT>`
-- vous pouvez aussi effectuer des requêtes HTTP depuis le terminal, plutôt qu'avec un navigateur
-  - ça se fait avec la commande `curl`
-  - et c'est ça que je veux dans le compte-rendu, pas de screen du navigateur :)
+- vous pouvez aussi effectuer des requêtes HTTP depuis le terminal, plutôt qu'avec un navigateur (`curl` ^^)
+```
+PS C:\Users\darkj> curl http://192.168.56.5:80
 
-> Si le port c'est 80, alors c'est la convention pour HTTP. Ainsi, il est inutile de le préciser dans l'URL, le navigateur le fait de lui-même. On peut juste saisir `http://<IP_VM>`.
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : <!doctype html>
+                    <html>
+                      <head>
+                        <meta charset='utf-8'>
+                        <meta name='viewport' content='width=device-width,
+                    initial-scale=1'>
+                        <title>HTTP Server Test Page powered by: Rocky
+                    Linux</title>
+                       ...
+RawContent        : HTTP/1.1 200 OK
+                    Connection: keep-alive
+                    Accept-Ranges: bytes
+                    Content-Length: 7620
+                    Content-Type: text/html
+                    Date: Sat, 10 Dec 2022 13:25:59 GMT
+                    ETag: "62e17e64-1dc4"
+                    Last-Modified: Wed, 27 Jul 202...
+Forms             : {}
+Headers           : {[Connection, keep-alive], [Accept-Ranges, bytes],
+                    [Content-Length, 7620], [Content-Type, text/html]...}
+Images            : {@{innerHTML=; innerText=; outerHTML=<IMG alt="[
+                    Powered by Rocky Linux ]" src="icons/poweredby.png">;
+                    outerText=; tagName=IMG; alt=[ Powered by Rocky Linux
+                    ]; src=icons/poweredby.png}, @{innerHTML=; innerText=;
+                    outerHTML=<IMG src="poweredby.png">; outerText=;
+                    tagName=IMG; src=poweredby.png}}
+InputFields       : {}
+Links             : {@{innerHTML=<STRONG>Rocky Linux website</STRONG>;
+                    innerText=Rocky Linux website; outerHTML=<A
+                    href="https://rockylinux.org/"><STRONG>Rocky Linux
+                    website</STRONG></A>; outerText=Rocky Linux website;
+                    tagName=A; href=https://rockylinux.org/},
+                    @{innerHTML=Apache Webserver</STRONG>;
+                    innerText=Apache Webserver; outerHTML=<A
+                    href="https://httpd.apache.org/">Apache
+                    Webserver</STRONG></A>; outerText=Apache Webserver;
+                    tagName=A; href=https://httpd.apache.org/},
+                    @{innerHTML=Nginx</STRONG>; innerText=Nginx;
+                    outerHTML=<A
+                    href="https://nginx.org">Nginx</STRONG></A>;
+                    outerText=Nginx; tagName=A; href=https://nginx.org},
+                    @{innerHTML=<IMG alt="[ Powered by Rocky Linux ]"
+                    src="icons/poweredby.png">; innerText=; outerHTML=<A
+                    id=rocky-poweredby href="https://rockylinux.org/"><IMG
+                    alt="[ Powered by Rocky Linux ]"
+                    src="icons/poweredby.png"></A>; outerText=; tagName=A;
+                    id=rocky-poweredby; href=https://rockylinux.org/}...}
+ParsedHtml        : mshtml.HTMLDocumentClass
+RawContentLength  : 7620
+```
 
 🌞 **Vérifier les logs d'accès**
 
 - trouvez le fichier qui contient les logs d'accès, dans le dossier `/var/log`
-- les logs d'accès, c'est votre serveur web qui enregistre chaque requête qu'il a reçu
-- c'est juste un fichier texte
-- affichez les 3 dernières lignes des logs d'accès dans le contenu rendu, avec une commande `tail`
+
+```
+[murci@tp4web ~]$ sudo cat /var/log/nginx/access.log | tail -n 3
+192.168.56.1 - - [10/Dec/2022:14:28:24 +0100] "GET /icons/poweredby.png HTTP/1.1" 200 15443 "http://192.168.56.5/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 OPR/93.0.0.0" "-"
+192.168.56.1 - - [10/Dec/2022:14:28:24 +0100] "GET /poweredby.png HTTP/1.1" 200 368 "http://192.168.56.5/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 OPR/93.0.0.0" "-"
+192.168.56.1 - - [10/Dec/2022:14:28:24 +0100] "GET /favicon.ico HTTP/1.1" 404 3332 "http://192.168.56.5/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 OPR/93.0.0.0" "-"
+```
 
 ## 5. Modif de la conf du serveur web
 

@@ -1,50 +1,38 @@
 # Partie 4 : Automatiser la résolution du TP
 
-Cette dernière partie fait le pont entre le TP scripting, et ce TP-ci qui est l'installation de NextCloud.
+Information :
+Les scripts [db.sh](db.sh) et [web.sh](web.sh) peuvent mettre un moment à s'éxecuter. C'est normal il y a des installations pour que tous soit correctament configurées et utilisables pour avoir votre joli base de données ^^.
 
-L'idée de cette partie 4 est simple : **écrire un script `bash` qui automatise la résolution de ce TP 5**.
+Etape 1 sur la machine `db.tp5.linux` :
 
-Autrement dit, vous devez avoir un script qui :
+Copier coller le scipt du fichier [db.sh](db.sh) dans un fichier `<nom_de_votre_fichier>`, avec la commande `sudo nano <nom_de_votre_fichier>`
+Puis executer le avec `sudo bash <nom_de_votre_fichier>`
 
-- **déroule les éléments de la checklist** qui sont automatisables
-  - désactiver SELinux
-  - donner un nom à chaque machine
-- **MariaDB** sur une machine
-  - install
-  - conf
-  - lancement
-  - préparation d'une base et d'un user que NextCloud utilisera
-- **Apache** sur une autre
-  - install
-  - conf
-  - lancement
-  - télécharge NextCloud
-  - setup NextCloud
-- affiche des **logs** que vous jugez pertinents pour montrer que le script s'exécute correctement
-- affiche, une fois terminé, **une phrase de succès** comme quoi tout a bien été déployé
+Etape 2 sur la machine `web.tp5.linux` :
 
-# Tips & Tricks
+avec la commande `sudo nano /srv/conf_for_nextcloud` copier coller le script suivant :
 
-Quelques tips pour la résolution du TP :
+```
+<VirtualHost *:80>
+  # on indique le chemin de notre webroot
+  DocumentRoot /var/www/tp5_nextcloud/
+  # on précise le nom que saisissent les clients pour accéder au service
+  ServerName  web.tp5.linux
 
-➜ vos scripts ne doivent contenir **AUCUNE** commande `sudo`
+  # on définit des règles d'accès sur notre webroot
+  <Directory /var/www/tp5_nextcloud/> 
+    Require all granted
+    AllowOverride All
+    Options FollowSymLinks MultiViews
+    <IfModule mod_dav.c>
+      Dav off
+    </IfModule>
+  </Directory>
+</VirtualHost>
+```
 
-➜ utilisez des **variables** au plus possible pour 
+Puis copier coller le scipt du fichier [web.sh](web.sh) dans un fichier `<nom_de_votre_fichier>`, avec la commande `sudo nano <nom_de_votre_fichier>`
+Puis executer le avec `sudo bash <nom_de_votre_fichier>`
 
-- évitez de ré-écrire des choses plusieurs fois
-- augmentez le niveau de clarté de votre script
-
-➜ usez et abusez des **commentaires** pour les lignes complexes
-
-➜ `mysql_secure_installation` effectue des configurations que vous pouvez reproduire à la main
-
-➜ pour **les fichiers de conf**
-
-- ne faites pas des `echo 'giga string super longue' > ficher.conf`
-- mais plutôt **un simple `cp`** qui copie un fichier que vous avez préparé à l'avance
-
-➜ usez et abusez du **code retour des commandes** pour **vérifier que votre script d'exécute correctement**
-
-➜ utilisez **la commande `exit`** pour quitter l'exécution du script en cas de problème
-
-➜ si vous **avez besoin d'un fichier ou dossier** spécifique pendant l'exécution du script, **votre script doit tester qu'il existe**
+Etape 3 :
+aller sur le site avec l'url `http://<votre_ip>` rentrer les informations et c'est fini ^^ (mdp du user nextcloud `pewpewpew`)

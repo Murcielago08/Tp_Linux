@@ -139,16 +139,13 @@ Complete!
 
 ```
 [murci@tp5web ~]$ unzip nextcloud-25.0.0rc3.zip
-[murci@tp5web ~]$ sudo mv nextcloud /var/www/tp5_nextcloud/
-[murci@tp5web tp5_nextcloud]$ sudo mv -v /var/www/tp5_nextcloud/nextcloud/* /var/www/tp5_nextcloud/
-[murci@tp5web tp5_nextcloud]$ sudo mv -v /var/www/tp5_nextcloud/nextcloud/.* /var/www/tp5_nextcloud/
+[murci@tp5web ~]$ mv nextcloud/* /var/www/tp5_nextcloud/
 ```
 
 - **assurez-vous que le dossier `/var/www/tp5_nextcloud/` et tout son contenu appartient à l'utilisateur qui exécute le service Apache**
   - utilisez une commande `chown` si nécessaire
 
 ```
-[murci@tp5web tp5_nextcloud]$ sudo chown apache:apache tp5_nextcloud/
 [murci@tp5web tp5_nextcloud]$ sudo chown -R apache:apache tp5_nextcloud/
 ```
 

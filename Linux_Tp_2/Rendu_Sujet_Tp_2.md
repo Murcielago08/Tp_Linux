@@ -349,9 +349,33 @@ ExecStart=/usr/bin/nc -l 8888
 🌞 **Vérifier que ça fonctionne**
 
 - vérifier que le service tourne avec un `systemctl status <SERVICE>`
+
+```
+[murci@tp2 ~]$ sudo systemctl status tp2_nc
+[sudo] password for murci:
+● tp2_nc.service - Super netcat tout fou
+     Loaded: loaded (/etc/systemd/system/tp2_nc.service; static)
+     Active: active (running) since Wed 2022-12-28 22:04:10 CET; 7min ago
+   Main PID: 914 (nc)
+      Tasks: 1 (limit: 5907)
+     Memory: 1.1M
+        CPU: 3ms
+     CGroup: /system.slice/tp2_nc.service
+             └─914 /usr/bin/nc -l 8888
+
+Dec 28 22:04:10 tp2 systemd[1]: Started Super netcat tout fou.
+```
+
 - vérifier que `nc` écoute bien derrière un port avec un `ss`
-  - vous filtrerez avec un `| grep` la sortie de la commande pour n'afficher que les lignes intéressantes
+
+```
+[murci@tp2 ~]$ sudo ss -el | grep tp2_nc
+tcp   LISTEN 0      10                                        0.0.0.0:ddi-tcp-1               0.0.0.0:*     ino:20121 sk:3 cgroup:/system.slice/tp2_nc.service <->
+tcp   LISTEN 0      10                                           [::]:ddi-tcp-1                  [::]:*     ino:20120 sk:5 cgroup:/system.slice/tp2_nc.service v6only:1 <->
+```
+
 - vérifer que juste ça marche en vous connectant au service depuis votre PC
+
 ```
 
 ```

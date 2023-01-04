@@ -27,12 +27,39 @@ L'utilisation d'un reverse proxy peut apporter de nombreux bénéfices :
 
 🌞 **On utilisera NGINX comme reverse proxy**
 
-- installer le paquet `nginx`
-- démarrer le service `nginx`
 - utiliser la commande `ss` pour repérer le port sur lequel NGINX écoute
+
+```
+[murci@proxytp6 ~]$ sudo ss -alnp | grep nginx
+tcp   LISTEN 0      511                                       0.0.0.0:80               0.0.0.0:*     users:(("nginx",pid=10692,fd=6),("nginx",pid=10691,fd=6))
+tcp   LISTEN 0      511                                          [::]:80                  [::]:*     users:(("nginx",pid=10692,fd=7),("nginx",pid=10691,fd=7))
+```
+
 - ouvrir un port dans le firewall pour autoriser le trafic vers NGINX
+
+```
+[murci@proxytp6 ~]$ sudo firewall-cmd --list-all | grep 80
+  ports: 80/tcp 22/tcp
+```
+
 - utiliser une commande `ps -ef` pour déterminer sous quel utilisateur tourne NGINX
+
+```
+[murci@proxytp6 ~]$ ps -ef | grep nginx
+root       10691       1  0 17:01 ?        00:00:00 nginx: master process /usr/sbin/nginx
+nginx      10692   10691  0 17:01 ?        00:00:00 nginx: worker process
+```
+
 - vérifier que le page d'accueil NGINX est disponible en faisant une requête HTTP sur le port 80 de la machine
+
+```
+PS C:\Users\darkj> curl http://10.105.1.13:80
+
+
+StatusCode        : 200
+StatusDescription : OK
+[...]
+```
 
 🌞 **Configurer NGINX**
 
@@ -44,42 +71,6 @@ L'utilisation d'un reverse proxy peut apporter de nombreux bénéfices :
   - NextCloud est un peu exigeant, et il demande à être informé si on le met derrière un reverse proxy
     - y'a donc un fichier de conf NextCloud à modifier
     - c'est un fichier appelé `config.php`
-
-Référez-vous à monsieur Google pour tout ça :)
-
-Exemple de fichier de configuration minimal NGINX.:
-
-```nginx
-server {
-    # On indique le nom que client va saisir pour accéder au service
-    # Pas d'erreur ici, c'est bien le nom de web, et pas de proxy qu'on veut ici !
-    server_name web.tp6.linux;
-
-    # Port d'écoute de NGINX
-    listen 80;
-
-    location / {
-        # On définit des headers HTTP pour que le proxying se passe bien
-        proxy_set_header  Host $host;
-        proxy_set_header  X-Real-IP $remote_addr;
-        proxy_set_header  X-Forwarded-Proto https;
-        proxy_set_header  X-Forwarded-Host $remote_addr;
-        proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
-
-        # On définit la cible du proxying 
-        proxy_pass http://<IP_DE_NEXTCLOUD>:80;
-    }
-
-    # Deux sections location recommandés par la doc NextCloud
-    location /.well-known/carddav {
-      return 301 $scheme://$host/remote.php/dav;
-    }
-
-    location /.well-known/caldav {
-      return 301 $scheme://$host/remote.php/dav;
-    }
-}
-```
 
 ➜ **Modifier votre fichier `hosts` de VOTRE PC**
 

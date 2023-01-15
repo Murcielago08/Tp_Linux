@@ -48,5 +48,6 @@ Status for the jail: sshd
 - lever le ban avec une commande liée à fail2ban
 
 ```
-fail2ban-client set [nom du jail] unbanip [IP concerné]
+[murci@tp5db ~]$ sudo fail2ban-client set sshd unbanip 10.105.1.11
+1
 ```

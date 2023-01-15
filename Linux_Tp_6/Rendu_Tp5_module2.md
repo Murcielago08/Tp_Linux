@@ -1,19 +1,5 @@
 # Module 2 : Sauvegarde du système de fichiers
 
-Dans cette partie, **on va monter un *serveur de sauvegarde* qui sera chargé d'accueillir les sauvegardes des autres machines**, en particulier du serveur Web qui porte NextCloud.
-
-Le *serveur de sauvegarde* sera un serveur NFS. NFS est un protocole qui permet de partager un dossier à travers le réseau.
-
-Ainsi, notre *serveur de sauvegarde* pourra partager un dossier différent à chaque machine qui a besoin de stocker des données sur le long terme.
-
-Dans le cadre du TP, le serveur partagera un dossier à la machine `web.tp6.linux`.
-
-Sur la machine `web.tp6.linux` s'exécutera à un intervalles réguliers un script qui effectue une sauvegarde des données importantes de NextCloud et les place dans le dossier partagé.
-
-Ainsi, ces données seront archivées sur le *serveur de sauvegarde*.
-
-![Kitten me](../pics/kittenme.jpg)
-
 ## Sommaire
 
 - [Module 2 : Sauvegarde du système de fichiers](#module-2--sauvegarde-du-système-de-fichiers)

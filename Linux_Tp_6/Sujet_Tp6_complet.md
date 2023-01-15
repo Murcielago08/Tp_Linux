@@ -28,7 +28,6 @@ Concrètement, dans ce TP, on va :
   - [Sommaire](#sommaire)
   - [Checklist](#checklist)
   - [Le lab](#le-lab)
-- [I. Here we go](#i-here-we-go)
 - [Module 1 : Reverse Proxy](#module-1--reverse-proxy)
 - [I. Setup](#i-setup)
 - [II. HTTPS](#ii-https)
@@ -63,31 +62,6 @@ Dans la suite du TP, la machine qui porte NextCloud est appelée `web.tp6.linux`
 
 Il est nécessaire en tout cas de partir avec NextCloud en place sur deux machines (web + db).
 
-# I. Here we go
-
-Pour plus de clarté, chaque partie est dans une page dédiée.
-
-Chaque module est indépendant, et ils peuvent être faits dans le désordre.
-
-- [TP6 : Travail autour de la solution NextCloud](#tp6--travail-autour-de-la-solution-nextcloud)
-- [0. Setup](#0-setup)
-  - [Sommaire](#sommaire)
-  - [Checklist](#checklist)
-  - [Le lab](#le-lab)
-- [I. Here we go](#i-here-we-go)
-- [Module 1 : Reverse Proxy](#module-1--reverse-proxy)
-- [I. Setup](#i-setup)
-- [II. HTTPS](#ii-https)
-- [Module 2 : Sauvegarde du système de fichiers](#module-2--sauvegarde-du-système-de-fichiers)
-  - [I. Script de backup](#i-script-de-backup)
-    - [1. Ecriture du script](#1-ecriture-du-script)
-    - [2. Clean it](#2-clean-it)
-    - [3. Service et timer](#3-service-et-timer)
-  - [II. NFS](#ii-nfs)
-    - [1. Serveur NFS](#1-serveur-nfs)
-    - [2. Client NFS](#2-client-nfs)
-- [Module 3 : Fail2Ban](#module-3--fail2ban)
-- [Module 4 : Monitoring](#module-4--monitoring)
 
 # Module 1 : Reverse Proxy
 

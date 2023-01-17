@@ -10,10 +10,10 @@
 [murci@tp5db ~]$ sudo dnf install epel-release -y
 Complete!
 
-[murci@tp5db ~]$ curl https://my-netdata.io/kickstart.sh > /tmp/netdata-kickstart.sh && sh /tmp/netdata-kickstart.sh
+[murci@tp5db ~]$ sudo dnf install -y netdata
 [...]
 Complete!
-[...]
+
 
 [murci@tp5db ~]$ ss -alnp | grep netdata
 u_str LISTEN 0      4096                                                   /tmp/netdata-ipc 25363                  * 0
@@ -35,10 +35,9 @@ success
 [murci@tp5web ~]$ sudo dnf install epel-release -y
 Complete!
 
-[murci@tp5web ~]$ curl https://my-netdata.io/kickstart.sh > /tmp/netdata-kickstart.sh && sh /tmp/netdata-kickstart.sh
+[murci@tp5web ~]$ sudo dnf install -y netdata
 [...]
 Complete!
-[...]
 
 [murci@tp5web ~]$ ss -alnp | grep netdata
 u_str LISTEN 0      4096                                                   /tmp/netdata-ipc 25363                  * 0
@@ -59,13 +58,9 @@ Utilisez votre navigateur pour visiter l'interface web de Netdata `http://<IP_VM
 
 🌞 **Une fois Netdata installé et fonctionnel, déterminer :**
 
-- l'utilisateur sous lequel tourne le(s) processus Netdata
+- l'utilisateur sous lequel tourne le(s) processus Netdata (**même résultat pour la machine web ^^**)
 
 ```
-[murci@tp5db ~]$ ps -aux | grep netdata.service
-murci       4929  0.0  0.2   6424  2132 pts/0    S+   18:41   0:00 grep --color=auto netdata.service
-[murci@tp5db ~]$ ps -aux | grep netdata.s
-murci       4931  0.0  0.2   6420  2132 pts/0    S+   18:41   0:00 grep --color=auto netdata.s
 [murci@tp5db ~]$ ps -aux | grep netdata.p
 netdata     4383  1.0  7.4 488716 73708 ?        SNsl 18:26   0:09 /usr/sbin/netdata -P /run/netdata/netdata.pid -D
 netdata     4530  0.0  0.3   4504  3532 ?        SN   18:26   0:00 bash /usr/libexec/netdata/plugins.d/tc-qos-helper.sh 1
@@ -75,7 +70,7 @@ netdata     4547  0.1  5.6 773668 55948 ?        SNl  18:26   0:01 /usr/libexec/
 murci       4933  0.0  0.2   6420  2320 pts/0    S+   18:41   0:00 grep --color=auto netdata.p
 ```
 
-- si Netdata écoute sur des ports
+- si Netdata écoute sur des ports (**même résultat pour la machine web ^^**)
 
 ```
 [murci@tp5db ~]$ sudo ss -lntup | grep netdata
@@ -87,15 +82,25 @@ tcp   LISTEN 0      4096           [::1]:8125          [::]:*    users:(("netdat
 tcp   LISTEN 0      4096            [::]:19999         [::]:*    users:(("netdata",pid=4383,fd=7))
 ```
 
-- comment sont consultables les logs de Netdata
+- comment sont consultables les logs de Netdata (**même résultat pour la machine web ^^**)
 
 ```
 [murci@tp5db ~]$ sudo cat /var/log/netdata/error.log | tail -10
+2023-01-17 10:40:27: go.d ERROR: springboot2[local] check failed
+2023-01-17 10:40:36: cgroup-name.sh: INFO: cgroup 'init.scope' is called 'init.scope'
+/etc/netdata/health_alarm_notify.conf: line 14: unexpected EOF while looking for matching `''
+/etc/netdata/health_alarm_notify.conf: line 18: syntax error: unexpected end of file
+2023-01-17 10:42:26: alarm-notify.sh: ERROR: Failed to load config file '/etc/netdata/health_alarm_notify.conf'.
+/etc/netdata/health_alarm_notify.conf: line 14: unexpected EOF while looking for matching `''
+/etc/netdata/health_alarm_notify.conf: line 18: syntax error: unexpected end of file
+2023-01-17 11:00:34: alarm-notify.sh: ERROR: Failed to load config file '/etc/netdata/health_alarm_notify.conf'.
+2023-01-17 11:00:34: alarm-notify.sh: ERROR: failed to send email notification for: tp5db system.ram.ram_usage is WARNING to 'root' with error code 1 (mkdir: cannot create directory '/usr/share/netdata/.esmtp_queue': Read-only file system
+unable to create queue dir /usr/share/netdata/.esmtp_queue).
 ```
 
 🌞 **Configurer Netdata pour qu'il vous envoie des alertes dans un salon discord** 
 
-**conf pour relier le webhook et netdata:**
+**conf pour relier le webhook et netdata: (même chose pour la machine web)**
 ```
 [murci@tp5db ~]$ sudo cat /etc/netdata/health_alarm_notify.conf
 ###############################################################################
@@ -117,7 +122,7 @@ if a role's recipients are not configured, a notification will be send to
 DEFAULT_RECIPIENT_DISCORD="alarms"
 ```
 
-**test alert:**
+**test alert: (même chose pour la machine web)**
 ```
 # become user netdata
 sudo su -s /bin/bash netdata
@@ -132,24 +137,13 @@ export NETDATA_ALARM_NOTIFY_DEBUG=1
 /usr/libexec/netdata/plugins.d/alarm-notify.sh test "ROLE"
 ```
 
-**config pour les différentes alerts:**
-```
-[murci@tp5db ~]$ sudo cat /etc/netdata/health.d/ram-usage.conf
-alarm: ram_usage
-    on: system.ram
-lookup: average -1m percentage of used
- units: %
- every: 1m
-  warn: $this > 50
-  crit: $this > 80
-  info: The percentage of RAM being used by the system.
-```
 
 🌞 **Vérifier que les alertes fonctionnent**
 
 - en surchargeant volontairement la machine 
 - par exemple, effectuez des *stress tests* de RAM et CPU, ou remplissez le disque volontairement
 
+**Pour la machine db et web ^^**
 ```
-[murci@tp5db ~]$ stress --vm 1 --vm-bytes 3512M -t 90s -v
+[murci@tp5db ~]$ bash -x /usr/libexec/netdata/plugins.d/alarm-notify.sh test
 ```

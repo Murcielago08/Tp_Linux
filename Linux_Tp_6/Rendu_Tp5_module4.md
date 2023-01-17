@@ -109,7 +109,7 @@ SEND_DISCORD="YES"
 
 # Create a webhook by following the official documentation -
 # https://support.discordapp.com/hc/en-us/articles/228383668-Intro-to-Webhooks
-DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/1064610053065277520/wCP9lq2mPaWfDTHGYJvm1Ib0ZbztVXP5wMsnlgsm-PZoR0C61mTK1uer9yz48dHRVjMd"
+DISCORD_WEBHOOK_URL="[lien de mon webhook]"
 
 if a role's recipients are not configured, a notification will be send to
 # this discord channel (empty = do not send a notification for unconfigured

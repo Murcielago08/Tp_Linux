@@ -150,16 +150,25 @@ Le principe :
   - on lui indique le chemin vers le certificat et la clé privée afin qu'il puisse les utiliser pour chiffrer le trafic
 
     ```
-    
+    [murci@proxytp6 conf.d]$ sudo cat web.tp6.linux.conf | grep ssl
+    listen 443 ssl;
+    ssl_certificate     /etc/pki/tls/certs/web.tp6.linux.crt;
+    ssl_certificate_key /etc/pki/tls/private/web.tp6.linux.key;
     ```
 
   - on lui demande d'écouter sur le port conventionnel pour HTTPS : 443 en TCP
     ```
-    
+    [murci@proxytp6 conf.d]$ sudo cat web.tp6.linux.conf | grep 443
+    listen 443 ssl;
     ```
 
 🌞 **Faire en sorte que NGINX force la connexion en HTTPS plutôt qu'HTTP**
 
 ```
-
+[murci@proxytp6 conf.d]$ sudo cat web.tp6.linux.conf | tail -5
+server {
+    listen 80;
+    server_name web.tp6.linux;
+    return 301 https://web.tp6.linux$request_uri;
+}
 ```

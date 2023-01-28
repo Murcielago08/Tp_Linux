@@ -57,7 +57,7 @@ murci        886     832  0 17:00 pts/0    00:00:00 grep --color=auto sshd
 
 ```
 [murci@tp2 ~]$ ss | grep ssh
-tcp   ESTAB  0      52                    192.168.56.2:ssh       192.168.56.1:61702
+tcp   ESTAB  0      52                     :ssh       192.168.56.1:61702
 ```
 
 🌞 **Consulter les logs du service SSH**
@@ -377,23 +377,56 @@ tcp   LISTEN 0      10                                           [::]:ddi-tcp-1 
 - vérifer que juste ça marche en vous connectant au service depuis votre PC
 
 ```
-
+[joris@fedora ~]$ nc -n 192.168.56.2 8888
+cc
+copains ^^
 ```
 
 🌞 **Les logs de votre service**
 
-- mais euh, ça s'affiche où les messages envoyés par le client ? Dans les logs !
-- `sudo journalctl -xe -u tp2_nc` pour visualiser les logs de votre service
-- `sudo journalctl -xe -u tp2_nc -f ` pour visualiser **en temps réel** les logs de votre service
-  - `-f` comme follow (on "suit" l'arrivée des logs en temps réel)
-- dans le compte-rendu je veux
-  - une commande `journalctl` filtrée avec `grep` qui affiche la ligne qui indique le démarrage du service
-  - une commande `journalctl` filtrée avec `grep` qui affiche un message reçu qui a été envoyé par le client
-  - une commande `journalctl` filtrée avec `grep` qui affiche la ligne qui indique l'arrêt du service
+
+- une commande `journalctl` filtrée avec `grep` qui affiche la ligne qui indique le démarrage du service
+
+```
+[murci@tp2 ~]$ journalctl -xe -u tp2_nc | grep Started
+Jan 28 12:39:20 tp2linux systemd[1]: Started Super netcat tout fou.
+```
+
+- une commande `journalctl` filtrée avec `grep` qui affiche un message reçu qui a été envoyé par le client
+
+```
+[murci@tp2 ~]$ journalctl -xe -u tp2_nc | grep cc
+Jan 28 12:39:25 tp2 nc[893]: cc
+[murci@tp2 ~]$ journalctl -xe -u tp2_nc | grep copains ^^
+Jan 28 12:39:37 tp2 nc[893]: copains ^^
+```
+
+- une commande `journalctl` filtrée avec `grep` qui affiche la ligne qui indique l'arrêt du service
+
+```
+[murci@tp2 ~]$ journalctl -xe -u tp2_nc | grep Deactivated
+Jan 28 12:40:23 tp2linux systemd[1]: tp2_nc.service: Deactivated successfully.
+```
 
 🌞 **Affiner la définition du service**
 
-- faire en sorte que le service redémarre automatiquement s'il se termine
-  - comme ça, quand un client se co, puis se tire, le service se relancera tout seul
-  - ajoutez `Restart=always` dans la section `[Service]` de votre service
-  - n'oubliez pas d'indiquer au système que vous avez modifié les fichiers de service :)
+```
+[murci@tp2 ~]$ sudo cat /etc/systemd/system/tp2_nc.service
+[Unit]
+Description=Super netcat tout fou
+
+[Service]
+ExecStart=/usr/bin/nc -l 8016
+Restart=always
+[murci@tp2 ~]$ sudo systemctl daemon-reload
+[murci@tp2 ~]$ sudo systemctl start tp2_nc
+
+[murci@tp2 ~]$ journalctl -xe -u tp2_nc | grep Jan
+Jan 28 12:44:23 tp2linux systemd[1]: Started Super netcat tout fou.
+Jan 28 12:44:23 tp2linux nc[909]: yo
+Jan 28 12:45:01 tp2linux nc[909]: noice
+Jan 28 12:45:10 tp2linux systemd[1]: tp2_nc.service: Deactivated successfully.
+Jan 28 12:45:10 tp2linux systemd[1]: tp2_nc.service: Scheduled restart job, restart counter is at 2.
+Jan 28 12:45:10 tp2linux systemd[1]: Stopped Super netcat tout fou.
+Jan 28 12:45:10 tp2linux systemd[1]: Started Super netcat tout fou.
+```

@@ -6,8 +6,7 @@
   - [Sommaire](#sommaire)
   - [I. Script de backup](#i-script-de-backup)
     - [1. Ecriture du script](#1-ecriture-du-script)
-    - [2. Clean it](#2-clean-it)
-    - [3. Service et timer](#3-service-et-timer)
+    - [2. Service et timer](#2-service-et-timer)
   - [II. NFS](#ii-nfs)
     - [1. Serveur NFS](#1-serveur-nfs)
     - [2. Client NFS](#2-client-nfs)
@@ -21,90 +20,51 @@ Partie à réaliser sur `web.tp6.linux`.
 🌞 **Ecrire le script `bash`**
 
 - il s'appellera `tp6_backup.sh`
-- il devra être stocké dans le dossier `/srv` sur la machine `web.tp6.linux`
-- le script doit commencer par un *shebang* qui indique le chemin du programme qui exécutera le contenu du script
-  - ça ressemble à ça si on veut utiliser `/bin/bash` pour exécuter le contenu de notre script :
 
-```
-#!/bin/bash
-```
-
-- pour apprendre quels dossiers il faut sauvegarder dans tout le bordel de NextCloud, [il existe une page de la doc officielle qui vous informera](https://docs.nextcloud.com/server/latest/admin_manual/maintenance/backup.html)
-- vous devez compresser les dossiers importants
-  - au format `.zip` ou `.tar.gz`
-  - le fichier produit sera stocké dans le dossier `/srv/backup/`
-  - il doit comporter la date, l'heure la minute et la seconde où a été effectué la sauvegarde
-    - par exemple : `nextcloud_2211162108.tar.gz`
-
-> On utilise la notation américaine de la date `yymmdd` avec l'année puis le mois puis le jour, comme ça, un tri alphabétique des fichiers correspond à un tri dans l'ordre temporel :)
-
-### 2. Clean it
-
-On va rendre le script un peu plus propre vous voulez bien ?
-
-➜ **Utiliser des variables** déclarées en début de script pour stocker les valeurs suivantes :
-
-- le nom du fichier `.tar.gz` ou `zip` produit par le script
-
-```bash
-# Déclaration d'une variable toto qui contient la string "tata"
-toto="tata"
-
-# Appel de la variable toto
-# Notez l'utilisation du dollar et des double quotes
-echo "$toto"
-```
-
----
-
-➜ **Commentez le script**
-
-- au minimum un en-tête sous le shebang
-  - date d'écriture du script
-  - nom/pseudo de celui qui l'a écrit
-  - un résumé TRES BREF de ce que fait le script
-
----
+[tp6_backup.sh ^^](tp6_backup.sh)
 
 ➜ **Environnement d'exécution du script**
 
 - créez un utilisateur sur la machine `web.tp6.linux`
-  - il s'appellera `backup`
-  - son homedir sera `/srv/backup/`
-  - son shell sera `/usr/bin/nologin`
-- cet utilisateur sera celui qui lancera le script
-- le dossier `/srv/backup/` doit appartenir au user `backup`
-- pour tester l'exécution du script en tant que l'utilisateur `backup`, utilisez la commande suivante :
 
-```bash
-$ sudo -u backup /srv/tp6_backup.sh
+```
+[murci@tp5web ~]$ sudo useradd backup -d /srv/backup/ -s /usr/bin/nologin
 ```
 
-### 3. Service et timer
+### 2. Service et timer
 
 🌞 **Créez un *service*** système qui lance le script
 
-- inspirez-vous des *services* qu'on a créés et/ou manipulés jusqu'à maintenant
-- la seule différence est que vous devez rajouter `Type=oneshot` dans la section `[Service]` pour indiquer au système que ce service ne tournera pas à l'infini (comme le fait un serveur web par exemple) mais se terminera au bout d'un moment
-- vous appelerez le service `backup.service`
-- assurez-vous qu'il fonctionne en utilisant des commandes `systemctl`
+```
+[murci@tp5web ~]$ sudo cat /etc/systemd/system/backup.service
+[Unit]
+Description=Service de sauvegarde des fichiers du système nextcloud ^^
 
-```bash
-$ sudo systemctl status backup
-$ sudo systemctl start backup
+[Service]
+ExecStart=/srv/tp6_backup.sh
+User=backup
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```
+[murci@tp5web ~]$ sudo systemctl status backup
+○ backup.service - Service de sauvegarde des fichiers du système nextcloud ^^
+     Loaded: loaded (/etc/systemd/system/backup.service; disabled; vendor preset: disabled)
+     Active: inactive (dead)
+
+Jan 30 14:48:24 tp5web systemd[1]: backup.service: Deactivated successfully.
+Jan 30 14:48:24 tp5web systemd[1]: Finished Service de sauvegarde des fichiers du système nextcloud ^^.
 ```
 
 🌞 **Créez un *timer*** système qui lance le *service* à intervalles réguliers
 
-- le fichier doit être créé dans le même dossier
-- le fichier doit porter le même nom
-- l'extension doit être `.timer` au lieu de `.service`
-- ainsi votre fichier s'appellera `backup.timer`
-- la syntaxe est la suivante :
-
-```systemd
+```
+[murci@tp5web ~]$ sudo cat /etc/systemd/system/backup.timer
 [Unit]
-Description=Run service X
+Description=Run service backup
 
 [Timer]
 OnCalendar=*-*-* 4:00:00
@@ -113,24 +73,29 @@ OnCalendar=*-*-* 4:00:00
 WantedBy=timers.target
 ```
 
-> [La doc Arch est cool à ce sujet.](https://wiki.archlinux.org/title/systemd/Timers)
-
 🌞 Activez l'utilisation du *timer*
 
 - vous vous servirez des commandes suivantes :
 
-```bash
-# demander au système de lire le contenu des dossiers de config
-# il découvrira notre nouveau timer
-$ sudo systemctl daemon-reload
+```
+[murci@tp5web ~]$ sudo systemctl start backup.timer
 
-# on peut désormais interagir avec le timer
-$ sudo systemctl start backup.timer
-$ sudo systemctl enable backup.timer
-$ sudo systemctl status backup.timer
+[murci@tp5web ~]$ sudo systemctl enable backup.timer
+Created symlink /etc/systemd/system/timers.target.wants/backup.timer → /etc/systemd/system/backup.timer.
 
-# il apparaîtra quand on demande au système de lister tous les timers
-$ sudo systemctl list-timers
+[murci@tp5web ~]$ sudo systemctl status backup.timer
+● backup.timer - Run service backup
+     Loaded: loaded (/etc/systemd/system/backup.timer; enabled; vendor preset: di>
+     Active: active (waiting) since Mon 2023-01-30 14:58:07 CET; 18s ago
+      Until: Mon 2023-01-30 14:58:07 CET; 18s ago
+    Trigger: Tue 2023-01-31 04:00:00 CET; 13h left
+   Triggers: ● backup.service
+
+Jan 30 14:58:07 tp5web systemd[1]: Started Run service backup.
+
+[murci@tp5web ~]$ sudo systemctl list-timers | grep backup
+Tue 2023-01-31 04:00:00 CET 13h left     n/a                         n/a
+backup.timer                 backup.service
 ```
 
 ## II. NFS
@@ -148,29 +113,105 @@ $ sudo systemctl list-timers
 - créer un dossier `/srv/nfs_shares`
 - créer un sous-dossier `/srv/nfs_shares/web.tp6.linux/`
 
-> Et ouais pour pas que ce soit le bordel, on va appeler le dossier comme la machine qui l'utilisera :)
+```
+[murci@tp6storage ~]$ sudo mkdir -p /srv/nfs_shares/web.tp6.linux
+
+[murci@tp6storage ~]$ sudo chown nobody /srv/nfs_shares/web.tp6.linux/
+
+[murci@tp6storage ~]$ sudo chown nobody /srv/nfs_shares/
+
+[murci@tp6storage ~]$ ls -al /srv
+total 0
+drwxr-xr-x.  3 root   root  24 Jan 30 15:54 .
+dr-xr-xr-x. 18 root   root 235 Oct 10 15:11 ..
+drwxr-xr-x.  3 nobody root  27 Jan 30 15:54 nfs_shares
+```
 
 🌞 **Installer le serveur NFS** (sur la machine `storage.tp6.linux`)
 
 - installer le paquet `nfs-utils`
+
+```
+[murci@tp6storage ~]$ sudo dnf install nfs-utils
+```
+
 - créer le fichier `/etc/exports`
-  - remplissez avec un contenu adapté
-  - j'vous laisse faire les recherches adaptées pour ce faire
+
+```
+[murci@tp6storage ~]$ sudo cat /etc/exports
+/srv/nfs_shares/web.tp5.linux 10.105.1.11(rw,sync,no_subtree_check)
+```
+
 - ouvrir les ports firewall nécessaires
+
+```
+[murci@tp6storage ~]$ sudo firewall-cmd --permanent --add-service=nfs
+success
+
+[murci@tp6storage ~]$ sudo firewall-cmd --permanent --add-service=mountd
+success
+
+[murci@tp6storage ~]$ sudo firewall-cmd --permanent --add-service=rpc-bind
+success
+
+[murci@tp6storage ~]$ sudo firewall-cmd --reload
+success
+
+[murci@tp6storage ~]$ sudo firewall-cmd --list-all | grep services
+  services: cockpit dhcpv6-client mountd nfs rpc-bind ssh
+```
+
 - démarrer le service
-- je vous laisse check l'internet pour trouver [ce genre de lien](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-rocky-linux-9) pour + de détails
+
+```
+[murci@tp6storage ~]$ sudo systemctl enable nfs-server
+Created symlink /etc/systemd/system/multi-user.target.wants/nfs-server.service → /usr/lib/systemd/system/nfs-server.service.
+
+[murci@tp6storage ~]$ sudo systemctl start nfs-server
+
+[murci@tp6storage ~]$ sudo systemctl status nfs-server
+● nfs-server.service - NFS server and services
+     Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; enabled; v>
+    Drop-In: /run/systemd/generator/nfs-server.service.d
+             └─order-with-mounts.conf
+     Active: active (exited) since Mon 2023-01-30 17:26:10 CET; 3s ago
+    Process: 11566 ExecStartPre=/usr/sbin/exportfs -r (code=exited, status=>
+    Process: 11567 ExecStart=/usr/sbin/rpc.nfsd (code=exited, status=0/SUCC>
+    Process: 11585 ExecStart=/bin/sh -c if systemctl -q is-active gssproxy;>
+   Main PID: 11585 (code=exited, status=0/SUCCESS)
+        CPU: 17ms
+
+Jan 30 17:26:10 tp6storage systemd[1]: Starting NFS server and services...
+Jan 30 17:26:10 tp6storage exportfs[11566]: exportfs: Failed to stat /srv/n>
+Jan 30 17:26:10 tp6storage systemd[1]: Finished NFS server and services.
+```
 
 ### 2. Client NFS
 
 🌞 **Installer un client NFS sur `web.tp6.linux`**
 
-- il devra monter le dossier `/srv/nfs_shares/web.tp6.linux/` qui se trouve sur `storage.tp6.linux`
-- le dossier devra être monté sur `/srv/backup/`
-- je vous laisse là encore faire vos recherches pour réaliser ça !
-- faites en sorte que le dossier soit automatiquement monté quand la machine s'allume
+```
+[murci@tp5web ~]$ sudo mount 10.105.1.14:/srv/nfs_shares/web.tp6.linux /srv/backup
+
+[murci@tp5web ~]$ df -h | grep 10.105.1.14
+10.105.1.14:/srv/nfs_shares/web.tp6.linux  6.2G  1.3G  4.9G  21% /srv/backup
+```
 
 🌞 **Tester la restauration des données** sinon ça sert à rien :)
 
 - livrez-moi la suite de commande que vous utiliseriez pour restaurer les données dans une version antérieure
 
-![Backup everything](../pics/backup_everything.jpg)
+```
+# déziper le dossier .zip ^^
+unzip /srv/backup/nextcloud_yyyywwddhhmmss.zip
+
+# copie les dossiers de backup dans les dossiers nextcloud ^^
+cp -a /srv/backup/config/. /var/www/tp6_nextcloud/config/
+cp -a /srv/backup/data/. /var/www/tp6_nextcloud/data/
+cp -a /srv/backup/themes/. /var/www/tp6_nextcloud/themes/
+
+# suppression puis création de la base de données comme avant ^^
+mysql -h 10.105.1.12 -u nextcloud -p'pewpewpew' -e "DROP DATABASE nextcloud"
+mysql -h 10.105.1.12 -u nextcloud -p'pewpewpew' -e "CREATE DATABASE nextcloud"
+mysql -h 10.105.1.12 -u nextcloud -p'pewpewpew' nextcloud < nextcloud-db_yyyymmddhhmmss.bak
+```

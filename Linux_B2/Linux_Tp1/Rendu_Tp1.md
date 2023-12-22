@@ -420,22 +420,10 @@ LISTEN 0      4096            [::]:9999         [::]:*    users:(("docker-proxy"
 - créez un dossier `nginx`
   - pas n'importe où, c'est ta conf caca, c'est dans ton homedir donc `/home/<TON_USER>/nginx/`
 - dedans, deux fichiers : `index.html` (un site nul) `site_nul.conf` (la conf NGINX de notre site nul)
-- exemple de `index.html` :
 
-```html
-<h1>MEOOOW</h1>
-```
-
-- config NGINX minimale pour servir un nouveau site web dans `site_nul.conf` :
-
-```nginx
-server {
-    listen        8080;
-
-    location / {
-        root /var/www/html/index.html;
-    }
-}
+```bash
+[joris@dockertp1linux ~]$ ls /home/joris/nginx/
+index.html  site_nul.conf
 ```
 
 - lancez le conteneur avec la commande en dessous, notez que :
@@ -475,9 +463,20 @@ On va donc le lancer de façon interactive : on lance le conteneur, et on pop to
 - ça donne donc :
 
 ```bash
-# on lance un conteneur "python" de manière interactive
-# et on demande à ce conteneur d'exécuter la commande "bash" au démarrage
-docker run -it python bash
+[joris@dockertp1linux ~]$ docker run -it python bash
+Unable to find image 'python:latest' locally
+latest: Pulling from library/python
+bc0734b949dc: Pull complete
+b5de22c0f5cd: Pull complete
+917ee5330e73: Pull complete
+b43bd898d5fb: Pull complete
+7fad4bffde24: Pull complete
+d685eb68699f: Pull complete
+107007f161d0: Pull complete
+02b85463d724: Pull complete
+Digest: sha256:3733015cdd1bd7d9a0b9fe21a925b608de82131aa4f3d397e465a1fcb545d36f
+Status: Downloaded newer image for python:latest
+root@33ca2ed79dc3:/#
 ```
 
 > *Ce conteneur ne vit (comme tu l'as demandé) que pour exécuter ton `bash`. Autrement dit, si ce `bash` se termine, alors le conteneur s'éteindra. Autrement diiiit, si tu quittes le `bash`, le processus `bash` va se terminer, et le conteneur s'éteindra. C'est vraiment un conteneur one-shot quoi quand on utilise `docker run` comme ça.*
@@ -488,8 +487,31 @@ docker run -it python bash
 - installez deux libs, elles ont été choisies complètement au hasard (avec la commande `pip install`):
   - `aiohttp`
   - `aioconsole`
+
+```bash
+root@35d96f0e7acd:/# pip install aiohttp
+Collecting aiohttp
+Successfully installed aiohttp-3.9.1 aiosignal-1.3.1 attrs-23.1.0 frozenlist-1.4.1 idna-3.6 multidict-6.0.4 yarl-1.9.4
+
+root@35d96f0e7acd:/# pip install aioconsole
+Collecting aioconsole
+  Obtaining dependency information for aioconsole from https://files.pythonhosted.org/packages/f7/39/b392dc1a8bb58342deacc1ed2b00edf88fd357e6fdf76cc6c8046825f84f/aioconsole-0.7.0-py3-none-any.whl.metadata
+  Downloading aioconsole-0.7.0-py3-none-any.whl.metadata (5.3 kB)
+Downloading aioconsole-0.7.0-py3-none-any.whl (30 kB)
+Installing collected packages: aioconsole
+Successfully installed aioconsole-0.7.0
+```
+
 - tapez la commande `python` pour ouvrir un interpréteur Python
 - taper la ligne `import aiohttp` pour vérifier que vous avez bien téléchargé la lib
+
+```bash
+root@35d96f0e7acd:/# python
+Python 3.12.1 (main, Dec 19 2023, 20:14:15) [GCC 12.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import aiohttp
+>>>
+```
 
 > *Notez que la commande `pip` est déjà présente. En effet, c'est un conteneur `python`, donc les mecs qui l'ont construit ont fourni la commande `pip` avec !*
 
@@ -511,14 +533,109 @@ docker run -it python bash
 - avec la commande `docker pull`
 - récupérez :
   - l'image `python` officielle en version 3.11 (`python:3.11` pour la dernière version)
+
+```bash
+[joris@dockertp1linux ~]$ docker pull python:3.11
+3.11: Pulling from library/python
+bc0734b949dc: Already exists
+b5de22c0f5cd: Already exists
+917ee5330e73: Already exists
+b43bd898d5fb: Already exists
+7fad4bffde24: Already exists
+1f68ce6a3e62: Pull complete
+e27d998f416b: Pull complete
+fefdcd9854bf: Pull complete
+Digest: sha256:4e5e9b05dda9cf699084f20bb1d3463234446387fa0f7a45d90689c48e204c83
+Status: Downloaded newer image for python:3.11
+docker.io/library/python:3.11
+```
+
   - l'image `mysql` officielle en version 5.7
+
+```bash
+[joris@dockertp1linux ~]$ docker pull mysql:5.7
+5.7: Pulling from library/mysql
+20e4dcae4c69: Pull complete
+1c56c3d4ce74: Pull complete
+e9f03a1c24ce: Pull complete
+68c3898c2015: Pull complete
+6b95a940e7b6: Pull complete
+90986bb8de6e: Pull complete
+ae71319cb779: Pull complete
+ffc89e9dfd88: Pull complete
+43d05e938198: Pull complete
+064b2d298fba: Pull complete
+df9a4d85569b: Pull complete
+Digest: sha256:4bc6bc963e6d8443453676cae56536f4b8156d78bae03c0145cbe47c2aad73bb
+Status: Downloaded newer image for mysql:5.7
+docker.io/library/mysql:5.7
+```
+
   - l'image `wordpress` officielle en dernière version
     - c'est le tag `:latest` pour récupérer la dernière version
     - si aucun tag n'est précisé, `:latest` est automatiquement ajouté
+
+```bash
+[joris@dockertp1linux ~]$ docker pull wordpress:latest
+latest: Pulling from library/wordpress
+af107e978371: Already exists
+6480d4ad61d2: Pull complete
+95f5176ece8b: Pull complete
+0ebe7ec824ca: Pull complete
+673e01769ec9: Pull complete
+74f0c50b3097: Pull complete
+1a19a72eb529: Pull complete
+50436df89cfb: Pull complete
+8b616b90f7e6: Pull complete
+df9d2e4043f8: Pull complete
+d6236f3e94a1: Pull complete
+59fa8b76a6b3: Pull complete
+99eb3419cf60: Pull complete
+22f5c20b545d: Pull complete
+1f0d2c1603d0: Pull complete
+4624824acfea: Pull complete
+79c3af11cab5: Pull complete
+e8d8239610fb: Pull complete
+a1ff013e1d94: Pull complete
+31076364071c: Pull complete
+87728bbad961: Pull complete
+Digest: sha256:ffabdfe91eefc08f9675fe0e0073b2ebffa8a62264358820bcf7319b6dc09611
+Status: Downloaded newer image for wordpress:latest
+docker.io/library/wordpress:latest
+```
+
   - l'image `linuxserver/wikijs` en dernière version
     - ce n'est pas une image officielle car elle est hébergée par l'utilisateur `linuxserver` contrairement aux 3 précédentes
     - on doit donc avoir un moins haut niveau de confiance en cette image
+
+```bash
+[joris@dockertp1linux ~]$ docker pull linuxserver/wikijs
+Using default tag: latest
+latest: Pulling from linuxserver/wikijs
+8b16ab80b9bd: Pull complete
+07a0e16f7be1: Pull complete
+145cda5894de: Pull complete
+1a16fa4f6192: Pull complete
+84d558be1106: Pull complete
+4573be43bb06: Pull complete
+20b23561c7ea: Pull complete
+Digest: sha256:131d247ab257cc3de56232b75917d6f4e24e07c461c9481b0e7072ae8eba3071
+Status: Downloaded newer image for linuxserver/wikijs:latest
+docker.io/linuxserver/wikijs:latest
+```
+
 - listez les images que vous avez sur la machine avec une commande `docker`
+
+```bash
+[joris@dockertp1linux ~]$ docker image ls
+REPOSITORY           TAG       IMAGE ID       CREATED       SIZE
+linuxserver/wikijs   latest    869729f6d3c5   6 days ago    441MB
+mysql                5.7       5107333e08a8   9 days ago    501MB
+python               latest    fc7a60e86bae   2 weeks ago   1.02GB
+wordpress            latest    fd2f5a0c6fba   2 weeks ago   739MB
+python               3.11      22140cbb3b0c   2 weeks ago   1.01GB
+nginx                latest    d453dd892d93   8 weeks ago   187MB
+```
 
 > Quand on tape `docker pull python` par exemple, un certain nombre de choses est implicite dans la commande. Les images, sauf si on précise autre chose, sont téléchargées depuis [le Docker Hub](https://hub.docker.com/). Rendez-vous avec un navigateur sur le Docker Hub pour voir la liste des tags disponibles pour une image donnée. Sachez qu'il existe d'autres répertoires publics d'images comme le Docker Hub, et qu'on peut facilement héberger le nôtre. C'est souvent le cas en entreprise. **On appelle ça un "registre d'images"**.
 
@@ -528,6 +645,14 @@ docker run -it python bash
 - vérifiez que la commande `python` est installée dans la bonne version
 
 > *Sympa d'installer Python dans une version spéficique en une commande non ? Peu importe que Python soit déjà installé sur le système ou pas. Puis on détruit le conteneur si on en a plus besoin.*
+
+```bash
+[joris@dockertp1linux ~]$ docker run -it python bash
+root@3f336e16e133:/# python
+Python 3.12.1 (main, Dec 19 2023, 20:14:15) [GCC 12.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>>
+```
 
 ## 2. Construire une image
 
@@ -547,6 +672,19 @@ Pour construire une image il faut :
   - l'installation de la librairie Python `emoji` (un `RUN` qui lance un `pip install`)
   - ajout de l'application (un `COPY`)
   - le lancement de l'application (un `ENTRYPOINT`)
+
+```bash
+[joris@dockertp1linux compose_test]$ sudo cat /home/joris/python_app_build/Dockerfile
+FROM debian:latest
+
+RUN apt update -y && apt install -y python3 python3-pip
+RUN apt install python3-emoji
+
+COPY app.py /app.py
+
+ENTRYPOINT ["python3", "/app.py"]
+```
+
 - le code de l'application :
 
 ```python
@@ -570,12 +708,18 @@ print(emoji.emojize("Cet exemple d'application est vraiment naze :thumbs_down:")
   - `-t python_app:version_de_ouf` permet de préciser un nom d'image (ou *tag*)
 - une fois le build terminé, constater que l'image est dispo avec une commande `docker`
 
+```bash
+[joris@dockertp1linux python_app_build]$ docker image ls | grep app
+python_app           version_de_ouf   4c3a2446732a   About a minute ago   635MB
+```
+
 🌞 **Lancer l'image**
 
 - lance l'image avec `docker run` :
 
 ```bash
-docker run python_app:version_de_ouf
+[joris@dockertp1linux python_app_build]$ docker run python_app:version_de_ouf
+Cet exemple d'application est vraiment naze 👎
 ```
 
 # III. Docker compose
@@ -587,16 +731,17 @@ Pour la fin de ce TP on va manipuler un peu `docker compose`.
 - dans un nouveau dossier dédié `/home/<USER>/compose_test`
 - le contenu est le suivant :
 
-```yml
+```bash
+[joris@dockertp1linux compose_test]$ sudo cat docker-compose.yml
 version: "3"
 
 services:
   conteneur_nul:
     image: debian
-    cmd: sleep 9999
+    entrypoint: sleep 9999
   conteneur_flopesque:
     image: debian
-    cmd: sleep 9999
+    entrypoint: sleep 9999
 ```
 
 Ce fichier est parfaitement équivalent à l'enchaînement de commandes suivantes (*ne les faites pas hein*, c'est juste pour expliquer) :
@@ -612,6 +757,23 @@ $ docker run --name conteneur_flopesque --network compose_test debian sleep 9999
 - déplacez-vous dans le dossier `compose_test` qui contient le fichier `docker-compose.yml`
 - go exécuter `docker compose up -d`
 
+```bash
+[joris@dockertp1linux compose_test]$ docker compose up -d
+[+] Running 3/3
+ ✔ conteneur_flopesque Pulled                                          3.6s
+ ✔ conteneur_nul 1 layers [⣿]      0B/0B      Pulled                   3.3s
+   ✔ bc0734b949dc Already exists                                       0.0s
+[+] Running 3/3
+ ✔ Network compose_test_default                  Created               0.6s
+ ✔ Container compose_test-conteneur_flopesque-1  Started               0.1s
+ ✔ Container compose_test-conteneur_nul-1        Started               0.1s
+
+[joris@dockertp1linux compose_test]$ docker ps
+CONTAINER ID   IMAGE     COMMAND        CREATED         STATUS         PORTS     NAMES
+9ff88d1dd5c7   debian    "sleep 9999"   4 seconds ago   Up 3 seconds             compose_test-conteneur_nul-1
+cd2a0e254a60   debian    "sleep 9999"   4 seconds ago   Up 3 seconds             compose_test-conteneur_flopesque-1
+```
+
 > Si tu mets pas le `-d` tu vas perdre la main dans ton terminal, et tu auras les logs des deux conteneurs. `-d` comme *daemon* : pour lancer en tâche de fond.
 
 🌞 **Vérifier que les deux conteneurs tournent**
@@ -619,6 +781,17 @@ $ docker run --name conteneur_flopesque --network compose_test debian sleep 9999
 - toujours avec une commande `docker`
 - tu peux aussi use des trucs comme `docker compose ps` ou `docker compose top` qui sont cools dukoo
   - `docker compose --help` pour voir les bails
+
+```bash
+[joris@dockertp1linux compose_test]$ docker compose top
+compose_test-conteneur_flopesque-1
+UID    PID     PPID    C    STIME   TTY   TIME       CMD
+root   13008   12977   0    10:43   ?     00:00:00   sleep 9999
+
+compose_test-conteneur_nul-1
+UID    PID     PPID    C    STIME   TTY   TIME       CMD
+root   12991   12958   0    10:43   ?     00:00:00   sleep 9999
+```
 
 🌞 **Pop un shell dans le conteneur `conteneur_nul`**
 
@@ -628,4 +801,8 @@ $ docker run --name conteneur_flopesque --network compose_test debian sleep 9999
   - il faudra installer un paquet qui fournit la commande `ping` pour pouvoir tester
   - juste pour te faire remarquer que les conteneurs ont pas besoin de connaître leurs IP : les noms fonctionnent
 
-![In the future](./img/in_the_future.jpg)
+```bash
+[joris@dockertp1linux compose_test]$ docker exec -it compose_test-conteneur_flopesque-1 bash
+root@cd2a0e254a60:/# ping conteneur_flopesque
+bash: ping: command not found
+```

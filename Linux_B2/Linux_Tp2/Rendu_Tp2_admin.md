@@ -46,6 +46,18 @@ Donc "just for good measures" comme on dit...
 - limiter la RAM que peut utiliser chaque conteneur à 1G
 - limiter à 1CPU chaque conteneur
 
+```
+version: '3'
+services:
+  service_name:
+    image: nom_de_l_image
+    deploy:
+          resources:
+            limits:
+              cpus: '1'
+              memory: 1g
+```
+
 > Ca se fait avec une option sur `docker run` ou son équivalent en syntaxe `docker-compose.yml`.
 
 🌞 **No `root`**
@@ -53,6 +65,14 @@ Donc "just for good measures" comme on dit...
 - s'assurer que chaque conteneur n'utilise pas l'utilisateur `root`
 - mais bien un utilisateur dédié
 - on peut préciser avec une option du `run` sous quelle identité le processus sera lancé
+
+```
+version: '3'
+services:
+  service_name:
+    image: nom_de_l_image
+    user: "user:group"
+```
 
 > Je rappelle qu'un conteneur met en place **un peu** d'isolation, **mais le processus tourne concrètement sur la machine hôte**. Donc il faut bien que, sur la machine hôte, il s'exécute sous l'identité d'un utilisateur, comme n'importe quel autre processus.
 
@@ -100,6 +120,9 @@ server {
 }
 ```
 
+[Docker Compose](./php/docker-compose.yml)
+[Conf Nginx](./php/nginx.conf)
+
 ## B. HTTPS auto-signé
 
 🌞 **HTTPS** auto-signé
@@ -115,15 +138,67 @@ openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -keyout www.supersite.c
 
 > Vous pouvez générer deux certificats (un pour chaque sous-domaine) ou un certificat *wildcard* qui est valide pour `*.supersite.com` (genre tous les sous-domaines de `supersite.com`).
 
+```
+PS C:\Users\darkj\OneDrive\Bureau\Doc Ynov\Programmation\Tp_Linux\Linux_B2\Linux_Tp2\php> ls
+
+
+    Répertoire : C:\Users\darkj\OneDrive\Bureau\Doc Ynov\Programmation\Tp_Linux\Linux_B2\Linux_Tp2\php
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        22/12/2023     12:24                sql
+d-----        04/01/2024     17:12                src
+-a----        15/01/2024     21:00            829 docker-compose.yml
+-a----        15/01/2024     20:58            818 nginx.conf
+-a----        15/01/2024     21:03           1970 pma.supersite.com.crt
+-a----        15/01/2024     21:03           3324 pma.supersite.com.key
+-a----        15/01/2024     21:03           1970 www.supersite.com.crt
+-a----        15/01/2024     21:03           3320 www.supersite.com.key
+
+
+version: "3"
+
+services:
+ phpapache:
+    image: php:8.0.0-apache
+    volumes:
+      - "./src/:/var/www/html"
+
+ mysql:
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_DATABASE=mysqldb
+      - MYSQL_ROOT_PASSWORD=oui
+    volumes:
+      - "./sql/:/docker-entrypoint-initdb.d"
+
+ phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=oui
+
+ nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./certs/www.supersite.com.crt:/etc/ssl/certs/www.supersite.com.crt"
+      - "./certs/www.supersite.com.key:/etc/ssl/certs/www.supersite.com.key"
+      - "./certs/www.supersite.com.crt:/etc/ssl/certs/pma.supersite.com.crt"
+      - "./certs/www.supersite.com.key:/etc/ssl/certs/pma.supersite.com.key"
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+
+
+```
+
 ## C. HTTPS avec une CA maison
-
-> **Vous pouvez jeter la clé et le certificat de la partie précédente :D**
-
-On va commencer par générer la clé et le certificat de notre Autorité de Certification (CA). Une fois fait, on pourra s'en servir pour signer d'autres certificats, comme celui de notre serveur web.
-
-Pour que la connexion soit trusted, il suffira alors d'ajouter le certificat de notre CA au magasin de certificats de votre navigateur sur votre PC.
-
-Il vous faudra un shell bash et des commandes usuelles sous la main pour réaliser les opérations. Lancez une VM, ou ptet Git Bash, ou ptet un conteneur debian oneshot ?
 
 🌞 **Générer une clé et un certificat de CA**
 
@@ -137,7 +212,18 @@ $ ls
 # le key c'est la clé privée
 ```
 
-Il est temps de générer une clé et un certificat que notre serveur web pourra utiliser afin de proposer une connexion HTTPS.
+```
+PS C:\Users\darkj\OneDrive\Bureau\Doc Ynov\Programmation\Tp_Linux\Linux_B2\Linux_Tp2\php> ls .\ca_maison\
+
+
+    Répertoire : C:\Users\darkj\OneDrive\Bureau\Doc Ynov\Programmation\Tp_Linux\Linux_B2\Linux_Tp2\php\ca_maison
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        15/01/2024     21:03           3468 CA.key
+-a----        15/01/2024     21:03           1970 CA.pem
+```
 
 🌞 **Générer une clé et une demande de signature de certificat pour notre serveur web**
 
@@ -148,20 +234,24 @@ $ ls
 # www.supersite.com.key c'est la clé qu'utilisera le serveur web
 ```
 
+```
+PS C:\Users\darkj\OneDrive\Bureau\Doc Ynov\Programmation\Tp_Linux\Linux_B2\Linux_Tp2\php> ls .\ca_maison\
+
+
+    Répertoire : C:\Users\darkj\OneDrive\Bureau\Doc Ynov\Programmation\Tp_Linux\Linux_B2\Linux_Tp2\php\ca_maison
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        15/01/2024     21:03           3468 CA.key
+-a----        15/01/2024     21:03           1970 CA.pem
+-a----        15/01/2024     21:03           1678 www.supersite.com.csr
+-a----        15/01/2024     21:03           3324 www.supersite.com.key
+```
+
 🌞 **Faire signer notre certificat par la clé de la CA**
 
 - préparez un fichier `v3.ext` qui contient :
-
-```ext
-authorityKeyIdentifier=keyid,issuer
-basicConstraints=CA:FALSE
-keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-subjectAltName = @alt_names
-
-[alt_names]
-DNS.1 = www.supersite.com
-DNS.2 = www.tp7.secu
-```
 
 - effectuer la demande de signature pour récup un certificat signé par votre CA :
 
@@ -171,21 +261,119 @@ $ ls
 # www.supersite.com.crt c'est le certificat qu'utilisera le serveur web
 ```
 
+```
+PS C:\Users\darkj\OneDrive\Bureau\Doc Ynov\Programmation\Tp_Linux\Linux_B2\Linux_Tp2\php> ls .\ca_maison\
+
+
+    Répertoire : C:\Users\darkj\OneDrive\Bureau\Doc Ynov\Programmation\Tp_Linux\Linux_B2\Linux_Tp2\php\ca_maison
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        15/01/2024     21:03           3468 CA.key
+-a----        15/01/2024     21:03           1970 CA.pem
+-a----        15/01/2024     21:03             42 CA.srl
+-a----        15/01/2024     21:03            237 v3.ext
+-a----        15/01/2024     21:03           2046 www.supersite.com.crt
+-a----        15/01/2024     21:03           1678 www.supersite.com.csr
+-a----        15/01/2024     21:03           3324 www.supersite.com.key
+```
+
 🌞 **Ajustez la configuration NGINX**
 
-- le site web doit être disponible en HTTPS en utilisant votre clé et votre certificat
-- une conf minimale ressemble à ça :
+```
+version: "3"
+
+services:
+ phpapache:
+    image: php:8.0.0-apache
+    volumes:
+      - "./src/:/var/www/html"
+
+ mysql:
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_DATABASE=mysqldb
+      - MYSQL_ROOT_PASSWORD=oui
+    volumes:
+      - "./sql/:/docker-entrypoint-initdb.d"
+
+ phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=oui
+
+ nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./ca_maison/www.supersite.com.crt:/etc/ssl/certs/www.supersite.com.crt"
+      - "./ca_maison/www.supersite.com.key:/etc/ssl/certs/www.supersite.com.key"
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+      
+volumes:
+  db_data:
+
+```
 
 ```nginx
-server {
-    [...]
-    # faut changer le listen
-    listen 10.7.1.103:443 ssl;
+events {}
 
-    # et ajouter ces deux lignes
-    ssl_certificate /chemin/vers/le/cert/www.supersite.com.crt;
-    ssl_certificate_key /chemin/vers/la/clé/www.supersite.com.key;
-    [...]
+http {
+    server {
+
+        listen       80;
+
+        server_name www.supersite.com;
+
+        return 301 https://$host$request_uri;
+
+        # location / {
+        #     proxy_pass   http://phpapache;
+        # }
+
+    }
+
+
+    server {
+
+        listen       443 ssl;
+
+        server_name www.supersite.com;
+
+
+        ssl_certificate      /etc/ssl/certs/www.supersite.com.crt;
+
+        ssl_certificate_key /etc/ssl/certs/www.supersite.com.key;
+
+
+        location / {
+
+            proxy_pass   http://phpapache;
+
+        }
+
+    }
+
+    server {
+        listen       80;
+        
+        server_name  pma.supersite.com;
+        
+        # return 301 https://$host$request_uri;
+
+        location / {
+            proxy_pass   http://phpmyadmin;
+        }
+    }
+
 }
 ```
 
@@ -194,9 +382,11 @@ server {
 - depuis votre PC
 - avec un `curl -k` car il ne reconnaît pas le certificat là
 
+```
+
+```
+
 🌞 **Ajouter le certificat de la CA dans votre navigateur**
 
 - vous pourrez ensuite visitez `https://web.tp7.b2` sans alerte de sécurité, et avec un cadenas vert
 - il est nécessaire de joindre le site avec son nom pour que HTTPS fonctionne (fichier `hosts`)
-
-> *En entreprise, c'est comme ça qu'on fait pour qu'un certificat de CA non-public soit trusted par tout le monde : on dépose le certificat de CA dans le navigateur (et l'OS) de tous les PCs. Evidemment, on utilise une technique de déploiement automatisé aussi dans la vraie vie, on l'ajoute pas à la main partout hehe.*

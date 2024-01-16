@@ -201,7 +201,16 @@ Pour cette partie, je vous laisse chercher des ressources sur Internet pour les 
 | `node2.tp3.b2` | `10.3.1.12` | Ui             | 1G  |
 | `node3.tp3.b2` | `10.3.1.13` | Ui             | 1G  |
 
-📁 **`partie1/Vagrantfile-3A`** dans le dépôt git de rendu
+📁 **`partie1/Vagrantfile-3A`** dans le dépôt git de rendu [Vagrantfile](./partie1/Vagrantfile-3A/Vagrantfile)
+
+```
+PS C:\Users\darkj\OneDrive\Bureau\Doc Ynov\Programmation\Tp_Linux\Linux_B2\admin\Tp3\partie1\Vagrantfile-3A> vagrant status
+Current machine states:
+
+node1.tp3.b2              running (virtualbox)
+node2.tp3.b2              running (virtualbox)
+node3.tp3.b2              running (virtualbox)
+```
 
 🌞 **Adaptez votre `Vagrantfile`** pour qu'il lance les VMs suivantes (en réutilisant votre box de la partie précédente)
 
@@ -214,6 +223,13 @@ Pour cette partie, je vous laisse chercher des ressources sur Internet pour les 
 | `bob.tp3.b2`   | `10.3.1.200` | Ui             | 2G  |
 | `eve.tp3.b2`   | `10.3.1.57`  | Nan            | 1G  |
 
-📁 **`partie1/Vagrantfile-3B`** dans le dépôt git de rendu
+📁 **`partie1/Vagrantfile-3B`** dans le dépôt git de rendu [Vagrantfile](./partie1/Vagrantfile-3B/Vagrantfile)
 
-> *La syntaxe Ruby c'est vraiment dégueulasse.*
+```
+PS C:\Users\darkj\OneDrive\Bureau\Doc Ynov\Programmation\Tp_Linux\Linux_B2\admin\Tp3\partie1\Vagrantfile-3B> vagrant status    
+Current machine states:
+
+alice.tp3.b2              running (virtualbox)
+bob.tp3.b2                running (virtualbox)
+eve.tp3.b2                running (virtualbox)
+```

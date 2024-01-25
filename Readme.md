@@ -12,11 +12,11 @@
     - [Mémos](#mémos-1)
     - [Admin](#admin)
     - [Dév](#dév)
-- [Tp B1 Linux](#tp-b1-linux)
-- [Tp B2 Linux](#tp-b2-linux)
-  - [Admin :](#admin-)
-  - [Dev :](#dev-)
-  - [Secu :](#secu-)
+  - [Tp B1 Linux](#tp-b1-linux)
+  - [Tp B2 Linux](#tp-b2-linux)
+    - [Admin :](#admin-)
+    - [Dev :](#dev-)
+    - [Secu :](#secu-)
 
 ## Disclaimer
 
@@ -63,7 +63,7 @@ Ici vous trouverez tous les supports de cours, TPs et autres ressources liées a
 
 - [API REST HTTP avec Flask](./cours_b2/dev/api/README.md)
 
-# Tp B1 Linux
+## Tp B1 Linux
 
 - [TP1 : Are you dead yet ?](./Linux_B1/Linux_Tp_1/Sujet_Tp_1.md)
   
@@ -105,7 +105,7 @@ Ici vous trouverez tous les supports de cours, TPs et autres ressources liées a
   
   - [Rendu Module 4 : Monitoring](./Linux_B1/Linux_Tp_6/Rendu_Tp5_module4.md)
 
-# Tp B2 Linux
+## Tp B2 Linux
 
 - [TP1 : Premiers pas Docker](./Linux_B2/Linux_Tp1/Sujet_Tp1.md)
   
@@ -120,7 +120,7 @@ Ici vous trouverez tous les supports de cours, TPs et autres ressources liées a
     
     - [Rendu TP2 admins : PHP stack](./Linux_B2/Linux_Tp2/Rendu_Tp2_admin.md)
 ---
-## Admin :
+### Admin :
 
 - [TP3 Admin : Vagrant](./Linux_B2/admin/Tp3/Sujet_Tp3.md)
   - [Rendu TP3 Admin : Vagrant](./Linux_B2/admin/Tp3/Rendu_Tp3.md)
@@ -137,12 +137,12 @@ Ici vous trouverez tous les supports de cours, TPs et autres ressources liées a
 
 ---
 
-## Dev :
+### Dev :
 
 - [TP3 : Développement d'un outil pour les admins](./Linux_B2/dev/Tp3/Sujet_Tp3.md)
 
 ---
-## Secu :
+### Secu :
 
 - [TP3 : Linux Hardening](./Linux_B2/secu/Tp3/Sujet_Tp3.md)
 

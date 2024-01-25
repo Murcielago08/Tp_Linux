@@ -40,9 +40,13 @@
 ---
 ## Admin :
 
-- [TP3 Admin : Vagrant](./Linux_B2/admin/)
-- [Rendu TP3 Admin : Vagrant]()
-- [TP4 : Vers une maîtrise des OS Linux](./Linux_B2/admin/)
+- [TP3 Admin : Vagrant](./Linux_B2/admin/Tp3/Sujet_Tp3.md)
+- [Rendu TP3 Admin : Vagrant](./Linux_B2/admin/Tp3/Rendu_Tp3.md)
+- [TP4 : Vers une maîtrise des OS Linux](./Linux_B2/admin/Tp4/Sujet_Tp4.md)
+- [Rendu TP4 : Vers une maîtrise des OS Linux](./Linux_B2/admin/Tp4/Rendu_Tp4.md)
+- [TP5 Admin : Haute-Dispo](./Linux_B2/admin/Tp5/Sujet_Tp5.md)
+  - [Partie 1 : Setup du lab](./Linux_B2/admin/Tp5/Sujet_setup_Tp5.md)
+  - [Partie 2 : HA](./Linux_B2/admin/Tp5/Sujet_ha_Tp5.md)
 
 ---
 
@@ -54,3 +58,4 @@
 ## Secu :
 
 - [TP3 : Linux Hardening](./Linux_B2/secu/Tp3/Sujet_Tp3.md)
+- [TP4 : Hardening Script](./Linux_B2/secu/Tp4/Sujet_Tp4.md)

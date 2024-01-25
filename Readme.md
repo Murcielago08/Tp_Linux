@@ -43,6 +43,7 @@
 # Tp B2 Linux
 
 - [TP1 : Premiers pas Docker](./Linux_B2/Linux_Tp1/Sujet_Tp1.md)
+  
   - [Rendu TP1 : Premiers pas Docker](./Linux_B2/Linux_Tp1/Rendu_Tp1.md)
 ---
 - [TP2 : Utilisation courante de Docker](./Linux_B2/Linux_Tp2/Sujet_Tp2.md)
@@ -51,6 +52,7 @@
  
   - [Rendu TP2 : Utilisation courante de Docker](./Linux_B2/Linux_Tp2/Rendu_Tp2.md)
     - [Rendu TP2 dév : packaging et environnement de dév local](./Linux_B2/Linux_Tp2/Rendu_tp2_dev.md)
+    
     - [Rendu TP2 admins : PHP stack](./Linux_B2/Linux_Tp2/Rendu_Tp2_admin.md)
 ---
 ## Admin :

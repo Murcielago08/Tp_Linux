@@ -1,3 +1,29 @@
+# Tp Linux 
+
+## Sommaire
+
+- [Tp Linux](#tp-linux)
+  - [Sommaire](#sommaire)
+  - [Disclaimer](#disclaimer)
+- [Tp B1 Linux](#tp-b1-linux)
+- [Tp B2 Linux](#tp-b2-linux)
+  - [Admin :](#admin-)
+  - [Dev :](#dev-)
+  - [Secu :](#secu-)
+
+## Disclaimer
+
+Ce repot est une sauvegarde de mon travail en cours de Linux sur les tps de mon intervenant IT4.
+
+Aucun de ces sujets de tps ou cours ne m'appartient, seuls les ***Rendu TP X*** sont de moi.
+(les images possibles sur les sujets/cours appartiennent aussi à it4 ^^)
+
+Si les sujets vous ont intéressé, je vous recommande chaudement d'aller voir son compte pour des explications et pour faire les tps si l'envie vous prend ^^
+
+Encore un grand merci à IT4 pour ces cours/tps 😁
+
+[Lien vers sont profil Gitlab ^^](https://gitlab.com/it4lik)
+
 # Tp B1 Linux
 
 - [TP1 : Are you dead yet ?](./Linux_B1/Linux_Tp_1/Sujet_Tp_1.md)

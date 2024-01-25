@@ -37,9 +37,9 @@ Ici vous trouverez tous les supports de cours, TPs et autres ressources liées a
 
 ### Mémos
 
-- [Shell et commandes](./memo/shell.md)
-- [Rocky network](./rocky_network.md)
-- [Installation de la VM Rocky](./install_vm.md)
+- [Shell et commandes](./cours_b1/memo/shell.md)
+- [Rocky network](./cours_b1/rocky_network.md)
+- [Installation de la VM Rocky](./cours_b1/install_vm.md)
 
 ### Cours
 
@@ -49,10 +49,10 @@ Ici vous trouverez tous les supports de cours, TPs et autres ressources liées a
 
 ### Mémos
 
-- [Shell et commandes](./memo/shell.md)
-- [Rocky network](./memo/rocky_network.md)
-- [Installation de la VM Rocky](./memo/install_vm.md)
-- [Docker](./memo/docker.md)
+- [Shell et commandes](./cours_b2/memo/shell.md)
+- [Rocky network](./cours_b2/memo/rocky_network.md)
+- [Installation de la VM Rocky](./cours_b2/memo/install_vm.md)
+- [Docker](./cours_b2/memo/docker.md)
 
 ### Admin
 
@@ -62,6 +62,7 @@ Ici vous trouverez tous les supports de cours, TPs et autres ressources liées a
 ### Dév
 
 - [API REST HTTP avec Flask](./cours_b2/dev/api/README.md)
+
 
 ## Tp B1 Linux
 

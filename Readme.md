@@ -5,6 +5,13 @@
 - [Tp Linux](#tp-linux)
   - [Sommaire](#sommaire)
   - [Disclaimer](#disclaimer)
+  - [Cours/Mémos B1](#coursmémos-b1)
+    - [Mémos](#mémos)
+    - [Cours](#cours)
+  - [Cours/Mémos B2](#coursmémos-b2)
+    - [Mémos](#mémos-1)
+    - [Admin](#admin)
+    - [Dév](#dév)
 - [Tp B1 Linux](#tp-b1-linux)
 - [Tp B2 Linux](#tp-b2-linux)
   - [Admin :](#admin-)
@@ -23,6 +30,38 @@ Si les sujets vous ont intéressé, je vous recommande chaudement d'aller voir s
 Encore un grand merci à IT4 pour ces cours/tps 😁
 
 [Lien vers sont profil Gitlab ^^](https://gitlab.com/it4lik)
+
+Ici vous trouverez tous les supports de cours, TPs et autres ressources liées au cours.
+
+## [Cours/Mémos B1](./cours_b1/README.md)
+
+### Mémos
+
+- [Shell et commandes](./memo/shell.md)
+- [Rocky network](./rocky_network.md)
+- [Installation de la VM Rocky](./install_vm.md)
+
+### Cours
+
+- [Intro OS et Linux](./cours_b1/intro/README.md)
+
+## [Cours/Mémos B2](./cours_b2/README.md)
+
+### Mémos
+
+- [Shell et commandes](./memo/shell.md)
+- [Rocky network](./memo/rocky_network.md)
+- [Installation de la VM Rocky](./memo/install_vm.md)
+- [Docker](./memo/docker.md)
+
+### Admin
+
+- [Cours B1 Partitionnement](./cours_b2/partition/README.md)
+- [Cours B1 Script](./cours_b2/script/README.md)
+
+### Dév
+
+- [API REST HTTP avec Flask](./cours_b2/dev/api/README.md)
 
 # Tp B1 Linux
 

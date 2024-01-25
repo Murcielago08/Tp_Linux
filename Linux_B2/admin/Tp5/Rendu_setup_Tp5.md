@@ -4,41 +4,10 @@
 
 - [Partie 1 : Setup du lab](#partie-1--setup-du-lab)
   - [Sommaire](#sommaire)
-  - [0. Setup](#0-setup)
   - [1. Lab initial](#1-lab-initial)
     - [A. Présentation](#a-présentation)
   - [B. L'app web](#b-lapp-web)
   - [C. Monter le lab](#c-monter-le-lab)
-
-## 0. Setup
-
-➜ **Machines Rocky Linux 9**
-
-- je vous recommande vivement de descendre à 1G par VM voire 512Mo ou entre les deux
-- on va pop pas mal de VMs dans ce TP
-- elles feront pas grand chose, donc vous pouvez *overprovision* : c'est à dire donner + de ressources que vous avez réellement
-
-> Par exemple, créez 10 VMs avec 1G de RAM chacune, sur un PC qui n'a que 8Go de RAM, c'est de l'*overprovision*.
-
-➜ **Vous DEVEZ utiliser uniquement les noms de vos machines**
-
-- donc remplir le fichier `/etc/hosts` sur toutes les machines, y compris votre PC
-
-➜ **Vous pouvez (ou pas) utiliser Vagrant pour lancer les VMs**
-
-- notez que dans la vraie vie, les VMs sont omniprésentes
-- aujourd'hui : on achète un biiiiig serveur, on installe un hyperviseur type 0, et on fait plein de VMs
-- dans la plupart des infras c'est comme ça, la VM reste donc très importante
-- ou utilise souvent aujourd'hui des outils analogues à Vagrant pour décrire les VMs avec du code afin de les allumer
-- je vous recommande d'utiliser Vagrant pour toutes les VMs, libre à vous, et vous remettez le `Vagrantfile` dans le rendu de TP
-
-➜ **Vous pouvez (ou pas) utiliser Docker pour lancer les apps**
-
-- dans la vraie vie, ce qui peut être systématiquement lancé dans des conteneurs c'est les apps maison (celle où on a besoin de setup un environnement particulier, avec un langage dans une version particulière, ses dépendances, étou)
-- à l'inverse, un service d'infra, comme les bases de données, le serveur DNS de l'infra, ou l'Active Directory, c'est moins courant de les voir dans un conteneur
-- je vous indiquerai pour chaque application :
-  - **🐋 Containerization recommended** si la conteneurisation est recommandée pour faire tourner l'app
-  - **🚢 No containerization recommended** si à l'inverse, je vous recommande d'installer ça direct sur la VM
 
 ## 1. Lab initial
 

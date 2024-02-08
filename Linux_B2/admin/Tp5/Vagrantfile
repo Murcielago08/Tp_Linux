@@ -1,29 +1,62 @@
-vms = [
-  { name: "web1.tp5.b2", ip: "10.5.1.11", ram: "1024", internet: "true"},
-  { name: "rp1.tp5.b2 ", ip: "10.5.1.111", ram: "1024", internet: "true" },
-  { name: "db1.tp5.b2", ip: "10.5.1.211", ram: "1024", internet: "true"}
-]
-
 Vagrant.configure("2") do |config|
-  
-  config.vm.box = "super_box"
 
-  vms.each do |vm|
-    config.vm.define vm[:name] do |node|
-      node.vm.hostname = vm[:name]
-      node.vm.network "private_network", type: "static", ip: vm[:ip]
-      
-      node.vm.provider "virtualbox" do |vb|
-        vb.memory = vm[:ram]
-      end
-
-      if vm[:internet] == "true"
-        node.vm.provider "virtualbox" do |vb|
-          vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-          vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-        end
-      end
-
+  # Configuration de la VM web1.tp5.b2
+  config.vm.define "web1" do |web1|
+    web1.vm.box = "ubuntu/bionic64"
+    web1.vm.hostname = "web1.tp5.b2"
+    web1.vm.network "private_network", ip: "10.5.1.11"
+    web1.vm.provider "virtualbox" do |vb|
+      vb.name = "web1"
+      vb.cpus = '1'
+      vb.memory = '512'
     end
+    
+    # Provisionnement avec le script bash pour web1
+    web1.vm.provision "shell", inline: File.read("web1_setup.sh")
   end
+
+  # Configuration de la VM rp1.tp5.b2
+  config.vm.define "rp1" do |rp1|
+    rp1.vm.box = "ubuntu/bionic64"
+    rp1.vm.hostname = "rp1.tp5.b2"
+    rp1.vm.network "private_network", ip: "10.5.1.111"
+    rp1.vm.provider "virtualbox" do |vb|
+      vb.name = "rp1"
+      vb.cpus = '1'
+      vb.memory = '512'
+    end
+    
+    # Provisionnement avec le script bash pour rp1
+    rp1.vm.provision "shell", inline: File.read("rp1_setup.sh")
+  end
+
+  # Configuration de la VM db1.tp5.b2
+  config.vm.define "db1" do |db1|
+    db1.vm.box = "ubuntu/bionic64"
+    db1.vm.hostname = "db1.tp5.b2"
+    db1.vm.network "private_network", ip: "10.5.1.211"
+    db1.vm.provider "virtualbox" do |vb|
+      vb.name = "db1"
+      vb.cpus = '1'
+      vb.memory = '512'
+    end
+    
+    # Provisionnement avec le script bash pour db1
+    db1.vm.provision "shell", inline: File.read("db1_setup.sh")
+  end
+
+  # Configuration supplémentaire pour toutes les machines
+  config.vm.provision "shell", inline: <<-SHELL
+    # Configuration du fichier hosts
+    echo "10.5.1.11 web1.tp5.b2" | sudo tee -a /etc/hosts
+    echo "10.5.1.111 rp1.tp5.b2" | sudo tee -a /etc/hosts
+    echo "10.5.1.211 db1.tp5.b2" | sudo tee -a /etc/hosts
+    echo "10.5.1.111 app_nulle.tp5.b2" | sudo tee -a /etc/hosts
+    # Activation du firewall et configuration
+    sudo ufw enable
+    sudo ufw default deny incoming
+    sudo ufw default allow outgoing
+    sudo ufw allow ssh
+  SHELL
+
 end

@@ -6,7 +6,6 @@
   - [Sommaire](#sommaire)
   - [1. Lab initial](#1-lab-initial)
     - [A. Présentation](#a-présentation)
-  - [B. L'app web](#b-lapp-web)
   - [C. Monter le lab](#c-monter-le-lab)
 
 ## 1. Lab initial
@@ -35,14 +34,6 @@ Un client pourra saisir le nom `http://app_nulle.tp5.b2` pour accéder à l'appl
 | `rp1.tp5.b2`  | `10.5.1.111` | Reverse Proxy (NGINX)      |
 | `db1.tp5.b2`  | `10.5.1.211` | DB (MariaDB)               |
 
-## B. L'app web
-
-**L'app web va être ultra simpliste** : un simple fichier PHP qui présente un formulaire HTML pour enregistrer une donnée en base, ou la récupérer. C'est juste une app qui nous permet de tester si notre setup fonctionne correctement !
-
-➜ **Le code est dispo dans [le dossier `php/` du dépôt git](./php/)**
-
-> Je vous ai packagé le tout avec Docker, y'a plus qu'à `docker compose up` et visiter `http://<IP_VM>` avec votre navigateur 🐋 J'ai pas écrit de `README.md` parce que j'suis un animal, démerdez-vous hihi. ALLEZ VOIR LA QUALITE DE MON PHP.
-
 ## C. Monter le lab
 
 ➜ **Je vais vous laisser monter le setup initial vous-mêmes**, ça commence à être la routine normalement. Les contraintes :
@@ -70,13 +61,23 @@ Un client pourra saisir le nom `http://app_nulle.tp5.b2` pour accéder à l'appl
 - les **scripts** qui effectuent la conf
 - le README explique juste qu'il faut `vagrant up` et éventuellement taper deux trois commandes après si nécessaire
 
-➜ **Ui ui ui, des scripts**
+pour lancer le vagrantfile rien de plus simple ^^
+aller avec la commande ```cd``` dans le dossier où est le vagrantfile ^^
+si vous avez clone faite la commande :
+```
+cd .\Linux_B2\admin\Tp5\ (Windows) 
+ou
+cd ./Linux_B2/admin/Tp5/ (Linux)
+```
 
-- je veux des scripts `bash` qui font la conf à votre place
-  - ce sera utile pour répliquer la conf sur d'autres machines
-  - ça vous fait pratiquer le scripting
-- avec Vagrant, vous pouvez faire un dossier partagé entre votre PC et la VM : idéal pour préparer des fichiers de conf ou des scripts et les déposer dans la VM
-  - on peut même directement demander à Vagrant d'exécuter un script au démarrage de la VM
-- je sais que vous en avez pas beaucoup fait des scripts, faites appel à moi avec plein de questions pour rendre le truc utile et efficace si besoin, c'est l'occasion de pratiquer justement
+Puis lancer la commande ```vagrant up```
 
-> *Je vous recommande de faire la conf à la main une première fois, avant de l'automatiser avec un script. Vagrant vous fournit un outil idéal pour détuire/refaire/retester sur une nouvelle VM.*
+Et voilà vous avez tout de prêt ^^
+
+[vagrant](./Vagrantfile)
+
+[script web](./web1_setup.sh)
+
+[script rp](./rp1_setup.sh)
+
+[script db](./db1_setup.sh)

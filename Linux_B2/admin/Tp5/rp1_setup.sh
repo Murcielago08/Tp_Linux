@@ -44,16 +44,18 @@ if [ $chown_status -ne 0 ]; then
     exit $chown_status
 fi
 
-# Obtention du certificat SSL avec Let's Encrypt
-sudo certbot --nginx --agree-tos --register-unsafely-without-email --redirect --non-interactive -d app_nulle.tp2.b5
-certbot_status=$?
+# sudo dnf install -y certbot python3-certbot-nginx
 
-if [ $certbot_status -ne 0 ]; then
-    echo "Erreur lors de l'obtention du certificat SSL avec Let's Encrypt."
-    exit $certbot_status
-fi
+# # Obtention du certificat SSL avec Let's Encrypt
+# sudo certbot --nginx --agree-tos --register-unsafely-without-email --redirect --non-interactive -d app_nulle.tp2.b5
+# certbot_status=$?
 
-# Configuration du reverse proxy pour HTTPS
+# if [ $certbot_status -ne 0 ]; then
+#     echo "Erreur lors de l'obtention du certificat SSL avec Let's Encrypt."
+#     exit $certbot_status
+# fi
+
+# Configuration du reverse proxy pour HTTP
 sudo rm /etc/nginx/sites-enabled/default
 echo 'server {
         listen 127.0.0.1:80;
